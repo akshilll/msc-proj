@@ -2,27 +2,29 @@ import operator
 import numpy
 import functools
 import os
-import math
-import json
-import random
 import numpy as np
-import networkx as nx
+from barl_simpleoptions.state import State
 
 from abc import ABC, abstractmethod
 from typing import List
 
 class heart_peg_state(State):
+	'''
+	State implementation for peg solitaire on a heart shaped board 
+	- inherits from State in barl_simpleoptions
 
-	def __init__(self, gap_list):
-		"""
-	    Instantiate new state
-	    Params:
-	        - gap_list: indices of holes which are empty. List(Integer)
-	     Returns:
-	        - State
-		"""
+	Args:
+
+	Attributes:
+		gap_list (list) : Used to specifify the indices of gaps in the board
+	'''
+	
+
+	def __init__(self, gap_list):	
+		
 		self.gap_list = gap_list
 		self.state = np.array([0 if i in gap_list else 1 for i in range(16)])
+		self.symm_state = self.symmetry_state()
 		self.num_to_coord = [(-1, 2), (1, 2), (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), 
 							 (-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0), (-1,-1), (0, -1),
 							 (1, -1), (0, -2)]
@@ -31,15 +33,25 @@ class heart_peg_state(State):
 		self.board_directions = np.array([(i, j) for i in range(2) for j in range(2)])
 
 	def __str__(self):
+		"""String representation of state
+		Returns:
+			String of state attribute of input
+		"""
 		return self.state.tostring()
 
 
 	def __eq__(self, other_state):
 	## DO I DO SYMMETRY HERE? YES
-		return (self.symmetry_state() == other_state.state()).all() or (self.state() == other_state.state())
-
+		return (self.symm_state == other_state).all() or (self.state == other_state).all()
 	def symmetry_state(self):
-		pass
+		'''Reflects state in vertical axis
+		Returns:
+			out (numpy array) : Array which is reflection of input's state attribute
+			
+		'''
+		out = np.array([self.state[np.where(self.num_to_coord[i] == self.symm_num_to_coord)[0]] for i in range(len(self.state))])
+		return out
+
 
 	def is_state_legal(self) -> bool :
 		"""
@@ -56,7 +68,7 @@ class heart_peg_state(State):
 
 		state_unique = set(self.state)
 
-		if not ((state_unique == set([1])) or (state_unique == set([0])) or (state_unique == set([0, 1]))):
+		if state_unique not in [set([1]), set([0]), set([0, 1])]:
 			return False
 		
 		return True
@@ -71,7 +83,7 @@ class heart_peg_state(State):
 		start_state[9] = 0
 		return (self.state == start_state).all()
 
-
+	# TO DO 
 	def is_terminal_state(self) -> bool :
 		"""
         Returns whether or not this is a terminal state.
@@ -88,7 +100,7 @@ class heart_peg_state(State):
 
 
 
-
+	# TO DO
 	def get_available_actions(self):
 	# where does the state itself come from 
 		for i in range(len(self.state)):
@@ -99,15 +111,16 @@ class heart_peg_state(State):
 		
 		return None # List(hashable actions)
 
-
+	# TO DO
 	def take_action(self, action) -> List[State]:
 
 		(gap_number, direction_from) = action
 		(x, y) = direction_from 
 
 
-		return List(States)
-
+		return #List(State)
+	
+	# TO DO
 	def is_action_legal(self, action) -> bool :
 		# Check that the coordinate is within the board 
 		# If the coordinate is on an edge check  that 
