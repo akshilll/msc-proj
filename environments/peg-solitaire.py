@@ -235,7 +235,7 @@ class heart_peg_state(State):
 			return False
 
 		# Check that 2 slots away in the direction still on the board
-		if peg_jumping_coord not in self.num_to_coord or :
+		if peg_jumping_coord not in self.num_to_coord:
 			return False
 		
 		# Get indices of relevant slots to check if there are pegs in them
