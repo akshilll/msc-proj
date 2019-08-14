@@ -3,8 +3,9 @@ import numpy
 import functools
 import os
 import numpy as np
+from itertools import product
 from barl_simpleoptions.state import State
-
+from copy import deepcopy
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -12,33 +13,34 @@ class heart_peg_state(State):
 	'''
 	State implementation for peg solitaire on a heart shaped board 
 	- inherits from State in barl_simpleoptions
+	
 
-	Args:
-
+	Arguments:
+		gap_list (list) -- Indicates indices of holes on board
 	Attributes:
-		gap_list (list) : Used to specifify the indices of gaps in the board
-		state (list) : List of ones where there are pegs an zeros where there aren't
-		symm_state (list) : same as state but for the reflection state
-		num_to_coord (list) : list used for mapping indices to coordinates on the board
-		symm_num_to_coord (list) : list used for mapping indices of normal state to coordinates of symmetry state
+		?gap_list (list) -- Used to specifify the indices of gaps in the board
+		state (list) -- List of ones where there are pegs an zeros where there aren't
+		symm_state (list) -- same as state but for the reflection state
+		?num_to_coord (list) -- list used for mapping indices to coordinates on the board
+		?symm_num_to_coord (list) -- list used for mapping indices of normal state to coordinates of symmetry state
 	'''
 
-	def __init__(self, gap_list):	
+	def __init__(self, state):	
+
 		
-		self.gap_list = gap_list
-		self.state = [0 if i in gap_list else 1 for i in range(16)]
+		self.state = state
+		self.gap_list = np.where(np.array(state) == 0)
 		self.symm_state = self.symmetry_state()
 		
-		# self.num_to_coord = [(-1, 2), (1, 2), (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), 
-		# 					 (-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0), (-1,-1), (0, -1),
-		# 					 (1, -1), (0, -2)]
-		# self.symm_num_to_coord = [(-i, j) for (i, j) in self.num_to_coord]
-		# self.symm_nums = [self.num_to_coord.index(x) for x in self.symm_num_to_coord]
+		self.num_to_coord = [(-1, 2), (1, 2), (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), 
+							 (-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0), (-1,-1), (0, -1),
+							 (1, -1), (0, -2)]
+		self.symm_num_to_coord = [(-i, j) for (i, j) in self.num_to_coord]
 		
 		self.board_directions = [(i, j) for i in range(2) for j in range(2)]
 		
 
-	def __str__(self):
+	def __str__(self) -> str :
 		"""String representation of state
 		Returns:
 			String of state attribute of input
@@ -46,19 +48,19 @@ class heart_peg_state(State):
 		return self.state.tostring()
 
 
-	def __eq__(self, other_state):
+	def __eq__(self, other_state) -> bool :
 	'''Check equality of states 
 
-	Parameters:
-		other_state (State): Object for comparison to this State 
+	Arguments:
+		other_state (State) -- Object for comparison to this State 
 
 	Returns: 
-		bool: True iff other_state is equal to state of reflection
+		bool -- True iff other_state is equal to state of reflection
 	'''
 		return (self.symm_state == other_state.state) or (self.state == other_state.state)
 	
 	
-	def symmetry_state(self):
+	def symmetry_state(self) -> List :
 		'''Reflects state in vertical axis
 		
 		Get symmetry index mapping between state and symm_state
@@ -69,15 +71,15 @@ class heart_peg_state(State):
 
 
 		Returns:
-			out (list) : List which is reflection of input's state attribute
+			out (list) -- List which is reflection of input's state attribute
 		'''
 		# Index mapping from state to symm_state
 		symm_index_map = [1, 0, 6, 5, 4, 3, 2, 11, 10, 9, 8, 7, 14, 13, 12, 15]
 		out = [self.state[i] for i in symm_index_map]
 		return out
 
-	def visualise(self):
-		# Print out state attribute separated into rows of board
+	def visualise(self) -> None:
+		'''Print out state attribute separated into rows of board'''
 		
 		print(self.state[:2], 
 			  self.state[2:7],
@@ -86,8 +88,6 @@ class heart_peg_state(State):
 			  self.state[15], sep = "\n")
 
 
-
-	
 	def is_state_legal(self) -> bool :
 		"""
         Returns whether or not the current state is legal.
@@ -133,38 +133,78 @@ class heart_peg_state(State):
 		
 		for i in range(len(self.state)):
 			if self.state[i] == 1:
-				pass
+				pass 
 
 
+	def get_available_actions(self) -> List[hashable]:
+		""" Gets available actions for state by iterating to find holes and checking if there are two pegs next to
+		Returns -- List[(gap_index, direction_of_peg_from_gap (x,y))]
+		"""
+		out = [a for a in product(self.gap_list, self.board_directions) if self.is_action_legal(a)]
 
-	# TO DO
-	def get_available_actions(self):
-	# where does the state itself come from 
-		for i in range(len(self.state)):
-			# Look for a gap
-			if self.state[i] == 0:
-				for (x, y) in self.board_directions:
-					pass
-		
-		return None # List(hashable actions)
+		return out
 
 	# TO DO
 	def take_action(self, action) -> List[State]:
+		''' Returns possible successors - only one in this case as env is deterministic
+		
+		Arguments:
+			action (int, (int, int)) -- action to be taken in gap_index, direction format
+
+		Returns:
+			List[State] -- 
+		'''
+		
+
+		if not self.is_action_legal(action):
+			raise Exception('Action is not legal')
 
 		(gap_number, direction_from) = action
 		(x, y) = direction_from 
 
+		new_state = deepcopy(self.state)		
+		(gap_x, gap_y) = self.num_to_coord[gap_idx]
+		
+		new_gap_idx = self.num_to_coord.index((gap_x + x, gap_y + y))
 
-		return #List(State)
+		new_state[gap_idx] = 1
+		new_state[new_gap_idx] =
+		s = State(gap_list = new_state)
+		
+		out = [s]
+		
+
+
+		return out#List(State)
 	
 	# TO DO
 	def is_action_legal(self, action) -> bool :
+		''' Check action is legal
+
+		Check for 
+
+		Arguments:
+			action (int, (int, int)): gap number, direction from
+		
+		'''
 		# Check that the coordinate is within the board 
 		# If the coordinate is on an edge check  that 
 		# If there is a gap at the index specified
 			# Check the self.gap_list
 		# If there are two pegs in the holes in the direction specified
-		pass
+		(gap_number, direction_from) = action
+		(x, y) = direction_from 
+
+		if gap_number not in range(16):
+			return False
+
+		if len(self.gap_list == 1):
+			return False
+
+		
+
+
+		return True
 
 	def get_successors(self) -> List[State]:
 		# Iterate over each action
