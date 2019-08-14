@@ -1,8 +1,7 @@
-import operator
-import numpy
-import functools
 import os
 import numpy as np
+import functools
+import operator
 from itertools import product
 from barl_simpleoptions.state import State
 from copy import deepcopy
@@ -17,12 +16,13 @@ class heart_peg_state(State):
 
 	Arguments:
 		gap_list (list) -- Indicates indices of holes on board
+	
 	Attributes:
-		?gap_list (list) -- Used to specifify the indices of gaps in the board
+		gap_list (list) -- Used to specifify the indices of gaps in the board
 		state (list) -- List of ones where there are pegs an zeros where there aren't
 		symm_state (list) -- same as state but for the reflection state
-		?num_to_coord (list) -- list used for mapping indices to coordinates on the board
-		?symm_num_to_coord (list) -- list used for mapping indices of normal state to coordinates of symmetry state
+		num_to_coord (list) -- list used for mapping indices to coordinates on the board
+		symm_num_to_coord (list) -- list used for mapping indices of normal state to coordinates of symmetry state
 	'''
 
 	def __init__(self, state):	
@@ -37,8 +37,8 @@ class heart_peg_state(State):
 							 (1, -1), (0, -2)]
 		self.symm_num_to_coord = [(-i, j) for (i, j) in self.num_to_coord]
 		
-		self.board_directions = [(i, j) for i in range(2) for j in range(2)]
-		
+		self.board_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+			
 
 	def __str__(self) -> str :
 		"""String representation of state
@@ -49,17 +49,16 @@ class heart_peg_state(State):
 
 
 	def __eq__(self, other_state) -> bool :
-	'''Check equality of states 
+		'''Check equality of states 
+		Arguments:
+			other_state (State) -- Object for comparison to this State 
 
-	Arguments:
-		other_state (State) -- Object for comparison to this State 
-
-	Returns: 
-		bool -- True iff other_state is equal to state of reflection
-	'''
+		Returns: 
+			bool -- True iff other_state is equal to state of reflection
+		'''
 		return (self.symm_state == other_state.state) or (self.state == other_state.state)
 	
-	
+		
 	def symmetry_state(self) -> List :
 		'''Reflects state in vertical axis
 		
@@ -116,11 +115,13 @@ class heart_peg_state(State):
         Returns:
             bool -- Whether or not this state is an initial state.
 		"""
+		# Ideal initial state
 		start_state = [1] * 16
 		start_state[9] = 0
+
 		return self.state == start_state
 
-	# TO DO 
+ 
 	def is_terminal_state(self) -> bool :
 		"""
         Returns whether or not this is a terminal state.
@@ -128,23 +129,33 @@ class heart_peg_state(State):
         Returns:
 			bool -- Whether or not this state is terminal.
 		"""
+		# If there's only one peg left
 		if np.sum(self.state) == 1:
 			return True
 		
-		for i in range(len(self.state)):
-			if self.state[i] == 1:
-				pass 
+		# If there are no available actions left
+		if len(self.get_available_actions()) == 0:
+			return True
+		
+			
+		# Must not be terminal if it's got this far
+		return False
+
+		
 
 
-	def get_available_actions(self) -> List[hashable]:
+	def get_available_actions(self) -> List:
 		""" Gets available actions for state by iterating to find holes and checking if there are two pegs next to
+		
 		Returns -- List[(gap_index, direction_of_peg_from_gap (x,y))]
 		"""
+
+		# Iterate over all gaps and board directions and only get legal actions
 		out = [a for a in product(self.gap_list, self.board_directions) if self.is_action_legal(a)]
 
 		return out
 
-	# TO DO
+	
 	def take_action(self, action) -> List[State]:
 		''' Returns possible successors - only one in this case as env is deterministic
 		
@@ -152,58 +163,94 @@ class heart_peg_state(State):
 			action (int, (int, int)) -- action to be taken in gap_index, direction format
 
 		Returns:
-			List[State] -- 
+			List[State] -- List of possible successor states (in this case only one due to deterministic env)
 		'''
-		
-
+		# Check action is legal
 		if not self.is_action_legal(action):
 			raise Exception('Action is not legal')
-
-		(gap_number, direction_from) = action
+		
+		# Unpack action
+		(gap_idx, direction_from) = action
 		(x, y) = direction_from 
-
-		new_state = deepcopy(self.state)		
+		
+		# Alter current state to get new state
+		new_state = deepcopy(self.state)
+		
+		# Get coord of gap
 		(gap_x, gap_y) = self.num_to_coord[gap_idx]
-		
+
+		# Find index of coord of new gap
 		new_gap_idx = self.num_to_coord.index((gap_x + x, gap_y + y))
-
+		new_gap_idx2 = self.num_to_coord.index((gap_x + 2*x, gap_y + 2*y))
+		
+		# Alter current state to make new state
 		new_state[gap_idx] = 1
-		new_state[new_gap_idx] =
-		s = State(gap_list = new_state)
+		new_state[new_gap_idx] = 0
+		new_state[new_gap_idx2] = 0
+		s = heart_peg_state(state = new_state)
 		
-		out = [s]
-		
+		return [s]
 
-
-		return out#List(State)
 	
-	# TO DO
 	def is_action_legal(self, action) -> bool :
 		''' Check action is legal
 
-		Check for 
+		Check gap is on board
+		Check direction is legal
+		If gap is on edge, only certain directions are allowed
+		If there is only 1 peg then False
 
 		Arguments:
 			action (int, (int, int)): gap number, direction from
 		
 		'''
-		# Check that the coordinate is within the board 
-		# If the coordinate is on an edge check  that 
-		# If there is a gap at the index specified
-			# Check the self.gap_list
+		
 		# If there are two pegs in the holes in the direction specified
-		(gap_number, direction_from) = action
+		(gap_idx, direction_from) = action
 		(x, y) = direction_from 
 
-		if gap_number not in range(16):
+		# Check the gap is on the board
+		if gap_idx not in range(16):
 			return False
-
-		if len(self.gap_list == 1):
-			return False
-
 		
+		# Check there is a gap at the specified index
+		if self.state[gap_idx] != 0:
+			return False
+		
+		# Check the direction is legal
+		if direction_from not in self.board_directions:
+			return False
+		
+		# Check there is more than one peg
+		if np.sum(self.state) == 1:
+			return False	
+		
+		# Get coordinates of relevant slots
+		(gap_coord_x, gap_coord_y) = self.num_to_coord[gap_idx]
+		peg_jumping_coord = (gap_coord_x + 2*x, gap_coord_y + 2*y)
+		peg_middle_coord = (gap_coord_x + x, gap_coord_y + y)
 
+		# Check that 1 slot away in the direction still on the board
+		if peg_middle_coord not in self.num_to_coord: 
+			return False
 
+		# Check that 2 slots away in the direction still on the board
+		if peg_jumping_coord not in self.num_to_coord or :
+			return False
+		
+		# Get indices of relevant slots to check if there are pegs in them
+		peg_jumping_idx = self.num_to_coord.index(peg_jumping_coord)
+		peg_middle_idx = self.num_to_coord.index(peg_middle_coord)
+		
+		# Check that there is a peg 2 slots away from gap
+		if self.state[peg_jumping_idx] != 1:
+			return False
+		
+		# Check that there is a peg 1 slot away from gap
+		if self.state[peg_middle_idx] !=1:
+			return False
+		
+		# If it has gotten this far it must be legal!
 		return True
 
 	def get_successors(self) -> List[State]:
