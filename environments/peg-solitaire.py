@@ -45,7 +45,7 @@ class heart_peg_state(State):
 		Returns:
 			String of state attribute of input
 		"""
-		return self.state.tostring()
+		return str(self.state)
 
 
 	def __eq__(self, other_state) -> bool :
