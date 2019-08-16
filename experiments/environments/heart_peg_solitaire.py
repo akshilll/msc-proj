@@ -30,7 +30,7 @@ class heart_peg_state(State):
 
 		
 		self.state = state
-		self.gap_list = np.where(np.array(state) == 0)
+		self.gap_list = np.where(np.array(state) == 0)[0].tolist()
 		self.symm_state = self.symmetry_state()
 		
 		self.num_to_coord = [(-1, 2), (1, 2), (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), 
