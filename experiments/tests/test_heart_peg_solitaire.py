@@ -13,10 +13,10 @@ def test_state_init():
     np.random.seed(1)
 
     # Random state
-    state_val = np.random.choice([0, 1], 16)
+    state_val = np.random.choice([0, 1], 16).tolist()
 
     # Instantiate an object
-    s = heart_peg_state(state = state_val)
+    s = heart_peg_state(state=state_val)
     
     # These are the attributes that we care about
     expected_attributes = ['board_directions', 'gap_list', 'get_available_actions', 'get_predecessors',
@@ -35,9 +35,9 @@ def test_str():
     np.random.seed(2)
 
     # Random states
-    s = heart_peg_state(state = np.random.choice([0, 1], 16))
-    s2 = heart_peg_state(state = np.random.choice([0, 1], 16))
-    s3 = heart_peg_state(state = np.random.choice([0, 1], 16))
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
 
     # Get string representations
     out = s.__str__()
@@ -49,20 +49,69 @@ def test_str():
     assert (out2 == '[1 1 0 0 0 0 1 1 1 0 0 0 1 1 1 0]')
     assert (out3 == '[0 1 0 0 1 1 1 0 0 0 0 1 1 1 1 0]')
 
-
-
-
-
-
-
-
-
-
 def test_eq():
-    pass
+    # Set the seed
+    np.random.seed(3)
+
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    init_state = [1] * 16
+    init_state[9] = 0
+    s4 = heart_peg_state(state=init_state)
+    
+    end_state = [0] * 16
+    end_state[9] = 1
+    s5 = heart_peg_state(state=end_state)
+
+    s_symm = heart_peg_state(state=s.symm_state)
+    s2_symm = heart_peg_state(state=s2.symm_state)
+    s3_symm = heart_peg_state(state=s3.symm_state)
+
+    # Testing
+    assert (s != s2)
+    assert (s != s3)
+    assert (s == heart_peg_state(state = s.state))
+    assert (s5 != s4)
+
+    # Symmetry
+    assert (s == s_symm)
+    assert (s2 == s2_symm)
+    assert (s3 == s3_symm)
+
+
 
 def test_symmetry_state():
-    pass
+    # Set the seed
+    np.random.seed(3)
+
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    init_state = [1] * 16
+    init_state[9] = 0
+    s2 = heart_peg_state(state=init_state)
+    
+    end_state = [0] * 16
+    end_state[9] = 1
+    s3 = heart_peg_state(state=end_state)
+
+    s_symm = heart_peg_state(state=s.symm_state)
+    
+    # Testing
+    assert (s.symm_state == [0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1])
+    assert (s.symm_state == s_symm.state)
+    assert (s2.symm_state == [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1])
+    assert (s3.symm_state == [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+    assert (s2.symm_state == s2.state)
+    assert (s.state == s_symm.symm_state)
+
+
+
+
+
 
 def test_is_state_legal():
     pass
