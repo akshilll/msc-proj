@@ -8,6 +8,8 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 from typing import List
 
+
+
 class heart_peg_state(State):
 	'''State implementation for peg solitaire on a heart shaped board 
 		- inherits from State in barl_simpleoptions
@@ -263,3 +265,4 @@ class heart_peg_state(State):
 		out = functools.reduce(operator.iconcat, out, [])
 
 		return out
+
