@@ -9,10 +9,9 @@ from abc import ABC, abstractmethod
 from typing import List
 
 class heart_peg_state(State):
-	'''
-	State implementation for peg solitaire on a heart shaped board 
-	- inherits from State in barl_simpleoptions
-	
+	'''State implementation for peg solitaire on a heart shaped board 
+		- inherits from State in barl_simpleoptions
+
 
 	Arguments:
 		gap_list (list) -- Indicates indices of holes on board
@@ -89,7 +88,7 @@ class heart_peg_state(State):
 
 	def is_state_legal(self) -> bool :
 		"""
-        Returns whether or not the current state is legal.
+        Determines whether or not the current state is legal.
         Returns:
             bool -- Whether or not this state is legal.
 		"""
