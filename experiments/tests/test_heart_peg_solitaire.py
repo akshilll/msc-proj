@@ -5,6 +5,8 @@ import numpy as np
 #########
 # TESTING STATE
 #########
+
+# Low
 def test_state_init():
     '''Testing that objects are instantiated properly and have correct attributes'''
     # Set the seed
@@ -29,16 +31,37 @@ def test_state_init():
 
 # Low
 def test_str():
-    pass
+    # Set the seed
+    np.random.seed(2)
+
+    # Random states
+    s = heart_peg_state(state = np.random.choice([0, 1], 16))
+    s2 = heart_peg_state(state = np.random.choice([0, 1], 16))
+    s3 = heart_peg_state(state = np.random.choice([0, 1], 16))
+
+    # Get string representations
+    out = s.__str__()
+    out2 = s2.__str__()
+    out3 = s3.__str__()
+
+    # Test
+    assert (out == '[0 1 1 0 0 1 0 1 0 1 0 1 1 1 1 1]')
+    assert (out2 == '[1 1 0 0 0 0 1 1 1 0 0 0 1 1 1 0]')
+    assert (out3 == '[0 1 0 0 1 1 1 0 0 0 0 1 1 1 1 0]')
+
+
+
+
+
+
+
+
+
 
 def test_eq():
     pass
 
 def test_symmetry_state():
-    pass
-
-# Low 
-def test_visualise():
     pass
 
 def test_is_state_legal():
