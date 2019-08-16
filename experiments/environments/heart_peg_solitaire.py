@@ -4,10 +4,10 @@ import functools
 import operator
 from itertools import product
 from barl_simpleoptions.state import State
-from barl_simpleoptions.environment import BaseEnvironment
+from barl_simpleoptions.environment import Environment
 from copy import deepcopy
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 
 
 
@@ -158,7 +158,7 @@ class heart_peg_state(State):
 		return out
 
 	
-	def take_action(self, action) -> List[State]:
+	def take_action(self, action) -> List['State']:
 		''' Returns possible successors - only one in this case as env is deterministic
 		
 		Arguments:
@@ -255,7 +255,7 @@ class heart_peg_state(State):
 		# If it has gotten this far it must be legal!
 		return True
 
-	def get_successors(self) -> List[State]:
+	def get_successors(self) -> List['State']:
 		# Iterate over each action
 		available_actions = self.get_available_actions()
 		
@@ -267,22 +267,93 @@ class heart_peg_state(State):
 
 		return out
 
-class env(BaseEnvironment):
+class heart_peg_env(Environment):
+	"""Implementation of an environment for the heart shaped version of peg solitaire
+
+	Attributes:
+		options List[Option] -- List of Options found for this environment
+		current_state heart_peg_state -- The current state of the environment
+		intermediate_reward float -- Intermediate reward for acting in the environment
+		win_reward float -- Reward for winning the game
+
+	"""
 	
-	
-	def __init__(self, options : List['Option']):
-		super.__init__(self, options)
+	def __init__(self, options : List['Option'], intermediate_reward=-1e-4, win_reward=1.):
+		
+		self.options = options
+		self.current_state = None
+		self.intermediate_reward = intermediate_reward
+		self.win_reward = win_reward		
+
+	def step(self, action) -> Tuple['State', float, bool]:
+		"""
+        One step transitions of environment
+        
+        Arguments:
+            action -- Action to be taken by the agent
+        Returns:
+            next_state (State) -- Successive state after the action is taken
+            reward (float) -- Immediate reward
+            game_over (bool) -- If the game is over after this step
+        next_state, reward, game_over
+        """
+		# Get next state as first elem because deterministic
+		next_state = deepcopy(self.current_state.take_action(action)[0])
+
+		# Count number of pegs remaining to get reward
+		pegs_remaining = np.sum(next_state.state)
+
+		# If the game is over
+		if self.current_state.is_terminal_state():
+			game_over = True
+			# Check if the game is won
+			if pegs_remaining == 1:
+				reward = self.win_reward
+			else:
+				reward = -pegs_remaining
+				
+		# The game is still afoot!
+		else:
+			game_over = False
+			reward = self.intermediate_reward
+
+		return next_state, float(reward), game_over
 		
 
-	def step(self, action):
-		pass
-
+		
 	def reset(self):
+		""" Resets environment to initial state
+
+		Returns : 
+		state -- initial state of the board
+		"""
+		# Construct start state
+		start_state = [1] * 16
+		start_state[9] = 0
+
+		# Assign to current_state
+		self.current_state = heart_peg_state(state = start_state)
 		
-	
+		return deepcopy(self.current_state)
+
+
 	def get_available_actions(self):
+		""" Wrapper function for state method of same name
+
+		Returns:
+		List[action] -- List of all available actions in the current state of the environment
+		"""
 		if self.current_state is None:
 			raise Exception("Current state is None, reset environment")
 		
 		return self.current_state.get_available_actions()
-		
+	
+	# Improved version of Josh's code
+	def get_available_options(self):
+		"""Finds all available options for this 
+
+		Returns : 
+		List[Option] -- list of options whose initiation set contain the current state
+		"""
+		available_options = [option for option in self.options if option.initiation(self.current_state)]
+		return available_options
