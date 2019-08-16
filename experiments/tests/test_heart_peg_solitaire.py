@@ -2,8 +2,10 @@ from experiments.environments.heart_peg_solitaire import heart_peg_state
 import pytest
 import numpy as np
 
-
-def test_init():
+#########
+# TESTING STATE
+#########
+def test_state_init():
     '''Testing that objects are instantiated properly and have correct attributes'''
     # Set the seed
     np.random.seed(1)
@@ -22,7 +24,57 @@ def test_init():
 
     # Test attributes 
     assert (x in dir(s) for x in expected_attributes)
+    assert (s.board_directions == [(-1, 0), (1, 0), (0, -1), (0, 1)])
+    assert (s.gap_list == [2, 3, 9, 10, 12, 15])
 
-    assert ( s.board_directions == [(-1, 0), (1, 0), (0, -1), (0, 1)] )
-    
-    assert (s.gap_list == [2, 3, 9, 10, 1])
+# Low
+def test_str():
+    pass
+
+def test_eq():
+    pass
+
+def test_symmetry_state():
+    pass
+
+# Low 
+def test_visualise():
+    pass
+
+def test_is_state_legal():
+    pass
+
+# Low
+def test_is_initial_state():
+    pass
+
+# Medium
+def test_is_terminal_state():
+    pass
+
+def get_available_actions():
+    pass
+
+def test_take_action():
+    pass
+
+def test_is_action_legal():
+    pass 
+
+def test_get_successors():
+    pass
+
+
+###### TESTING ENVIRONMENT
+
+def test_env_reset():
+    pass
+
+def test_reset():
+    pass
+
+def test_step():
+    pass
+
+def test_env_get_available_actions():
+    pass

@@ -4,6 +4,7 @@ import functools
 import operator
 from itertools import product
 from barl_simpleoptions.state import State
+from barl_simpleoptions.environment import BaseEnvironment
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from typing import List
@@ -266,3 +267,22 @@ class heart_peg_state(State):
 
 		return out
 
+class env(BaseEnvironment):
+	
+	
+	def __init__(self, options : List['Option']):
+		super.__init__(self, options)
+		
+
+	def step(self, action):
+		pass
+
+	def reset(self):
+		
+	
+	def get_available_actions(self):
+		if self.current_state is None:
+			raise Exception("Current state is None, reset environment")
+		
+		return self.current_state.get_available_actions()
+		
