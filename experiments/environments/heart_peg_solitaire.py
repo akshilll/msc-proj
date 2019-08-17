@@ -2,6 +2,8 @@ import os
 import numpy as np
 import functools
 import operator
+import networkx as nx
+
 from itertools import product
 from barl_simpleoptions.state import State
 from barl_simpleoptions.environment import Environment
@@ -123,7 +125,6 @@ class heart_peg_state(State):
 
 		return self.state == start_state
 
- 
 	def is_terminal_state(self) -> bool :
 		"""
         Returns whether or not this is a terminal state.
@@ -142,9 +143,6 @@ class heart_peg_state(State):
 			
 		# Must not be terminal if it's got this far
 		return False
-
-		
-
 
 	def get_available_actions(self) -> List:
 		""" Gets available actions for state by iterating to find holes and checking if there are two pegs next to
@@ -357,3 +355,5 @@ class heart_peg_env(Environment):
 		"""
 		available_options = [option for option in self.options if option.initiation(self.current_state)]
 		return available_options
+
+
