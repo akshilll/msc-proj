@@ -12,13 +12,12 @@ def generate_interaction_graph(initial_states : List['State']) :
 	Generates the state-transition graph for this environment.
 	"""
 	states = []
-	
+
 	# Add initial states to current successor list.
 	current_successor_states = deepcopy(initial_states)
 
 	# While we have no new successor states to process.
 	while (not len(current_successor_states) == 0) :
-
 		# Add each current new successor to our list of processed states.
 		next_successor_states = []
 		for successor_state in current_successor_states :
@@ -47,13 +46,19 @@ def generate_interaction_graph(initial_states : List['State']) :
 
 		
 def write_graph(file_path):
-	
+	""" Wrapper function of generate_interaction_graph
+        Outputs interaction graph of heart_peg_solitaire to file
+
+        Arguments:
+            file_path -- String containing file path to output file where graph is written
+    
+    """
 	start_state = [1] * 16
 	start_state[9] = 0
 	init_state = heart_peg_state(state = start_state)	
 
 	interaction_graph = generate_interaction_graph(initial_states = [init_state])
-	
+	print(interaction_graph)
 	nx.write_gexf(interaction_graph, file_path)
 
 
