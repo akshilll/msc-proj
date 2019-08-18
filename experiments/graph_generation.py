@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 import networkx as nx 
-from experiments.environments.heart_peg_solitaire import heart_peg_env, heart_peg_state
+from heart_peg_solitaire import heart_peg_env, heart_peg_state
 from typing import List
 from barl_simpleoptions.state import State
 
@@ -15,13 +15,15 @@ def generate_interaction_graph(initial_states : List['State']) :
 
 	# Add initial states to current successor list.
 	current_successor_states = deepcopy(initial_states)
+	print(current_successor_states)
 
 	# While we have no new successor states to process.
 	while (not len(current_successor_states) == 0) :
 		# Add each current new successor to our list of processed states.
+		
 		next_successor_states = []
 		for successor_state in current_successor_states :
-			if (not successor_state in current_successor_states) :
+			if (successor_state not in current_successor_states) :
 				states.append(successor_state)
 
 				# Add this state's successors to the successor list.
@@ -30,6 +32,7 @@ def generate_interaction_graph(initial_states : List['State']) :
 						next_successor_states.append(new_successor_state)
 
 		current_successor_states = deepcopy(next_successor_states)
+		print(current_successor_states, states)
 	
 	# Create graph from state list.
 	interaction_graph = nx.DiGraph()

@@ -1,4 +1,4 @@
-from experiments.environments.heart_peg_solitaire import heart_peg_state
+from experiments.heart_peg_solitaire import heart_peg_state
 import pytest
 import numpy as np
 
