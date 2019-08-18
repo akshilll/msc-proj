@@ -114,7 +114,27 @@ def test_symmetry_state():
 
 
 def test_is_state_legal():
-    pass
+    # Set the seed
+    np.random.seed(4)
+
+    # Random state
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s2 = heart_peg_state(state=init_state)
+    
+    # Win state
+    end_state = [0] * 16
+    end_state[9] = 1
+    s3 = heart_peg_state(state=end_state)
+
+    s4 = heart_peg_state(state = [1] * 16)
+    s5 = heart_peg_state(state = [0] * 16)
+    s6 = heart_peg_state(state = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 2, 0, 1, 2, 1])
+    s7 = heart_peg_state(state = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1., 1])
+
 
 # Low
 def test_is_initial_state():
