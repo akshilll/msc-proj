@@ -263,15 +263,19 @@ def test_take_action():
     end_state[9] = 1
     s3 = heart_peg_state(state=end_state)
     
-    # Left, right, up down, edge good, edge bad, bad state.
-    out = s.take_action((4, (-1, 0)))
-    out2 = s2.take_action((9, (1, 0)))[0]
-    out3 = out2.take_action((10, (0, 1)))[0]
+    # Left, right, up, down, edge bad, bad state.
+    out = s.take_action((4, (-1, 0))) # left
+    out2 = s2.take_action((9, (1, 0)))[0] # right
+    out3 = out2.take_action((10, (0, 1)))[0] # up
+    out3 = s2.take_action((9, (0, -1)))[0] # up
 
     assert type(out) is list
     assert str(out[0]) == '[1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0]'
     assert str(out2) == '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1]'
     assert str(out3) == '[1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1]'
+    with pytest.raises(Exception):
+       s3.take_action((10, (-1, 0))) 
+
     
 
 

@@ -276,6 +276,24 @@ class heart_peg_state(State):
 		out = functools.reduce(operator.iconcat, out, [])
 
 		return out
+	
+	def get_transition_action(self, next_state : 'State') :
+        """
+        Get list of actions to enable transition
+        
+        Arguments:
+            next_state (state) -- successive state to work out action for
+        Returns:
+            List[actions] -- List of actions 
+        """
+		
+		out = [a for a in self.get_available_actions() if next_state in self.take_action(a)]
+
+		return out
+
+		
+
+
 
 class heart_peg_env(Environment):
 	"""Implementation of an environment for the heart shaped version of peg solitaire
