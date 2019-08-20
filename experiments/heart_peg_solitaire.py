@@ -278,7 +278,7 @@ class heart_peg_state(State):
 		return out
 	
 	def get_transition_action(self, next_state : 'State') :
-        """
+		"""
         Get list of actions to enable transition
         
         Arguments:
@@ -326,10 +326,11 @@ class heart_peg_env(Environment):
         next_state, reward, game_over
         """
 		# Get next state as first elem because deterministic
-		next_state = deepcopy(self.current_state.take_action(action)[0])
-
+		self.current_state = deepcopy(self.current_state.take_action(action)[0])
+		
 		# Count number of pegs remaining to get reward
-		pegs_remaining = np.sum(next_state.state)
+		pegs_remaining = np.sum(self.current_state.state)
+		print(self.current_state)
 
 		# If the game is over
 		if self.current_state.is_terminal_state():
@@ -337,15 +338,17 @@ class heart_peg_env(Environment):
 			# Check if the game is won
 			if pegs_remaining == 1:
 				reward = self.win_reward
+
 			else:
 				reward = -pegs_remaining
 				
 		# The game is still afoot!
 		else:
+			print(self.current_state)
 			game_over = False
 			reward = self.intermediate_reward
 
-		return next_state, float(reward), game_over
+		return deepcopy(self.current_state), float(reward), game_over
 		
 
 		

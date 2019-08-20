@@ -1,4 +1,4 @@
-from experiments.heart_peg_solitaire import heart_peg_state
+from experiments.heart_peg_solitaire import heart_peg_state, heart_peg_env
 import pytest
 import numpy as np
 
@@ -233,8 +233,8 @@ def test_get_available_actions():
 
     # Testing
     assert s.get_available_actions() == [(4, (-1, 0)), (8, (0, 1))]
-    assert s2.get_available_actions() == [(3, (0, -1)), (4, (0, -1)), (7, (1, 0)), (11, (-1, 0))]
-    assert s3.get_available_actions() == [(10, (0, 1))]
+    assert s2.get_available_actions() == [(1, (0, -1)), (6, (-1, 0)), (8, (1, 0)), (8, (0, 1)), (13, (0, 1)), (14, (0, 1))]
+    assert s3.get_available_actions() == [(2, (1, 0)), (5, (-1, 0)), (8, (0, 1)), (13, (0, 1))]
     assert s4.get_available_actions() == [(9, (-1, 0)), (9, (1, 0)), (9, (0, -1))]
     assert s5.get_available_actions() == []
     assert s6.get_available_actions() == []
@@ -267,35 +267,98 @@ def test_take_action():
     out = s.take_action((4, (-1, 0))) # left
     out2 = s2.take_action((9, (1, 0)))[0] # right
     out3 = out2.take_action((10, (0, 1)))[0] # up
-    out3 = s2.take_action((9, (0, -1)))[0] # up
+    out4 = s2.take_action((9, (0, -1)))[0] # down
 
     assert type(out) is list
     assert str(out[0]) == '[1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0]'
     assert str(out2) == '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1]'
     assert str(out3) == '[1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1]'
+    assert str(out4) == '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0]'
+
     with pytest.raises(Exception):
        s3.take_action((10, (-1, 0))) 
 
+def test_is_action_legal():
+    # Set the seed
+    np.random.seed(5)
+
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    end_state = [0] * 16
+    end_state[9] = 1
+    s3 = heart_peg_state(state=end_state)
+
+    assert s.is_action_legal((4, (-1, 0)))
+    assert not s.is_action_legal((4, (1, 1)))
+    assert not s.is_action_legal((4, (2, 0)))
+    assert not s.is_action_legal((-1, (1, 0)))
+    assert not s.is_action_legal((17, (1, 0)))
     
 
-
-       
-
-def test_is_action_legal():
-    pass 
+    for i in range(16):
+        for j in s.board_directions:
+            assert not s3.is_action_legal((i, j))
 
 def test_get_successors():
-    pass
+    for _ in range(100):
+        s = heart_peg_state(state = np.random.choice([0, 1], 16))
+        succ = s.get_successors()
+        assert type(succ) == list
+        assert set(succ) == set([s.take_action(a)[0] for a in s.get_available_actions()])
 
 
 ###### TESTING ENVIRONMENT
 
 def test_reset():
-    pass
+    env = heart_peg_env(options = [])
+    
+    assert env.current_state is None
+    assert env.intermediate_reward == -1e-4
+
+    env.reset()
+
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s = heart_peg_state(state=init_state)
+
+    assert env.current_state == s
 
 def test_step():
-    pass
+    
+    # win
+    env = heart_peg_env(options = [])
+    s = heart_peg_state(state=[0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    s_ = heart_peg_state(state=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    env.current_state = s
+    out = env.step(s.get_available_actions()[0])
+    assert out == (s_, env.win_reward, True)
 
-# Low
-def test_env_get_available_actions():
-    pass
+    # Intermediate
+    init_state = [1] * 16
+    init_state[9] = 0
+    s2 = heart_peg_state(state=init_state)
+    env2 = heart_peg_env(options = [])
+    env2.current_state = s2
+    (s2_, r, g) = env2.step(s2.get_available_actions()[0])
+    assert r == env2.intermediate_reward
+    assert not g
+    assert str(s2_) == '[1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1]'
+
+    # Loss
+    env3 = heart_peg_env(options = [])
+    s3 = heart_peg_state(state=[0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s3_ = heart_peg_state(state=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    env3.current_state = s3
+    a = s3.get_available_actions()[0]
+    print(a)
+    out3 = env3.step(a)
+    assert out3 == (s3_, -2., True)
+
+
+
+
+
