@@ -81,8 +81,6 @@ def test_eq():
     assert (s2 == s2_symm)
     assert (s3 == s3_symm)
 
-
-
 def test_symmetry_state():
     # Set the seed
     np.random.seed(3)
@@ -108,11 +106,6 @@ def test_symmetry_state():
     assert (s2.symm_state == s2.state)
     assert (s.state == s_symm.symm_state)
 
-
-
-
-
-
 def test_is_state_legal():
     # Set the seed
     np.random.seed(4)
@@ -133,22 +126,156 @@ def test_is_state_legal():
     s4 = heart_peg_state(state = [1] * 16)
     s5 = heart_peg_state(state = [0] * 16)
     s6 = heart_peg_state(state = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 2, 0, 1, 2, 1])
-    s7 = heart_peg_state(state = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1., 1])
+    s7 = heart_peg_state(state = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1., 1, 0, 1, 1, 1])
 
+    with pytest.raises(IndexError):
+        heart_peg_state(state = [1, 0, 1])
+
+    assert (s.is_state_legal())
+    assert (s2.is_state_legal())
+    assert (s3.is_state_legal())
+    assert (not s4.is_state_legal())
+    assert (not s5.is_state_legal())
+    assert (not s6.is_state_legal())
+    assert (not s7.is_state_legal())
 
 # Low
 def test_is_initial_state():
-    pass
+    # Set the seed
+    np.random.seed(5)
+
+    # Random state
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s2 = heart_peg_state(state=init_state)
+    
+    # Win state
+    end_state = [0] * 16
+    end_state[9] = 1
+    s3 = heart_peg_state(state=end_state)
+
+    assert (not s.is_initial_state())
+    assert (s2.is_initial_state())
+    assert (not s3.is_initial_state())
 
 # Medium
 def test_is_terminal_state():
-    pass
+    # Set the seed
+    np.random.seed(5)
 
-def get_available_actions():
-    pass
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s4 = heart_peg_state(state=init_state)
+    
+    # End state
+    end_state = [0] * 16
+    end_state[9] = 1
+    s5 = heart_peg_state(state=end_state)
+
+    s6 = heart_peg_state(state=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s7 = heart_peg_state(state=[0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s8 = heart_peg_state(state=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s9 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1])
+    s10 = heart_peg_state(state=[1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s11 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
+    s12 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1])
+
+
+    # Testing
+    assert (not s.is_terminal_state())
+    assert (not s2.is_terminal_state())
+    assert (not s3.is_terminal_state())
+    assert (not s4.is_terminal_state())
+    assert (s5.is_terminal_state())
+    assert (s6.is_terminal_state())
+    assert (s7.is_terminal_state())
+    assert (s8.is_terminal_state())
+    assert (s9.is_terminal_state())
+    assert (not s10.is_terminal_state())
+    assert (not s11.is_terminal_state())
+    assert (s12.is_terminal_state())
+
+def test_get_available_actions():
+    # Set the seed
+    np.random.seed(5)
+
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s4 = heart_peg_state(state=init_state)
+    
+    # End state
+    end_state = [0] * 16
+    end_state[9] = 1
+    s5 = heart_peg_state(state=end_state)
+
+    s6 = heart_peg_state(state=[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s7 = heart_peg_state(state=[0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s8 = heart_peg_state(state=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s9 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1])
+    s10 = heart_peg_state(state=[1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    s11 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1])
+    s12 = heart_peg_state(state=[1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1])
+
+    # Testing
+    assert s.get_available_actions() == [(4, (-1, 0)), (8, (0, 1))]
+    assert s2.get_available_actions() == [(3, (0, -1)), (4, (0, -1)), (7, (1, 0)), (11, (-1, 0))]
+    assert s3.get_available_actions() == [(10, (0, 1))]
+    assert s4.get_available_actions() == [(9, (-1, 0)), (9, (1, 0)), (9, (0, -1))]
+    assert s5.get_available_actions() == []
+    assert s6.get_available_actions() == []
+    assert s7.get_available_actions() == []
+    assert s8.get_available_actions() == []
+    assert s9.get_available_actions() == []
+    assert s10.get_available_actions() ==  [(8, (0, 1))]
+    assert s11.get_available_actions() == [(9, (-1, 0)), (9, (1, 0))]
+    assert s12.get_available_actions() == []
+
 
 def test_take_action():
-    pass
+    # Set the seed
+    np.random.seed(5)
+
+    # Random states
+    s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
+    # Initial state
+    init_state = [1] * 16
+    init_state[9] = 0
+    s2 = heart_peg_state(state=init_state)
+    
+    # End state
+    end_state = [0] * 16
+    end_state[9] = 1
+    s3 = heart_peg_state(state=end_state)
+    
+    # Left, right, up down, edge good, edge bad, bad state.
+    out = s.take_action((4, (-1, 0)))
+    out2 = s2.take_action((9, (1, 0)))[0]
+    out3 = out2.take_action((10, (0, 1)))[0]
+
+    assert type(out) is list
+    assert str(out[0]) == '[1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0]'
+    assert str(out2) == '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1]'
+    assert str(out3) == '[1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1]'
+    
+
+
+       
 
 def test_is_action_legal():
     pass 
@@ -159,14 +286,12 @@ def test_get_successors():
 
 ###### TESTING ENVIRONMENT
 
-def test_env_reset():
-    pass
-
 def test_reset():
     pass
 
 def test_step():
     pass
 
+# Low
 def test_env_get_available_actions():
     pass

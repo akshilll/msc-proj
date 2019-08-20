@@ -51,6 +51,8 @@ class heart_peg_state(State):
 		"""
 		return str(self.state)
 
+	
+
 
 	def __eq__(self, other_state) -> bool :
 		'''Check equality of states 
@@ -60,10 +62,12 @@ class heart_peg_state(State):
 		Returns: 
 			bool -- True iff other_state is equal to state of reflection
 		'''
-		return (self.symm_state == other_state.state) or (self.state == other_state.state)
+		return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
 	
-		
-	def symmetry_state(self) -> List :
+	def __hash__(self):
+		return hash(str(self.state))
+
+	def symmetry_state(self):
 		'''Reflects state in vertical axis
 		
 		Get symmetry index mapping between state and symm_state
@@ -84,11 +88,11 @@ class heart_peg_state(State):
 	def visualise(self) -> None:
 		'''Print out state attribute separated into rows of board'''
 		
-		print(self.state[:2], 
-			  self.state[2:7],
-			  self.state[7:12],
-			  self.state[12:15],
-			  self.state[15], sep = "\n")
+		print('    ', self.state[0], '   ', self.state[1], "\n", 
+			  self.state[2:7], "\n",
+			  self.state[7:12], "\n", 
+			  '  ', self.state[12:15], "\n",
+			  '      ', self.state[15])
 
 
 	def is_state_legal(self) -> bool :
@@ -102,9 +106,17 @@ class heart_peg_state(State):
 			return False
 		
 		# The board can't be full of pegs
-		if (self.state == np.ones(16)).all():
+		if self.state == [1] * 16:
 			return False
 		
+		# It can't be empty either
+		if self.state == [0] * 16:
+			return False
+		
+		# Check that the state has only integers in it 
+		if not all(isinstance(n, int) for n in self.state): 
+			return False
+
 		# The board can only contain 1s and 0s 
 		state_unique = set(self.state)
 		if state_unique not in [set([1]), set([0]), set([0, 1])]:
