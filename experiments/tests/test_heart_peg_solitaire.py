@@ -284,7 +284,7 @@ def test_is_action_legal():
 
     # Random states
     s = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
-    s2 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
+    
     s3 = heart_peg_state(state=np.random.choice([0, 1], 16).tolist())
     
     end_state = [0] * 16
@@ -354,7 +354,6 @@ def test_step():
     s3_ = heart_peg_state(state=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
     env3.current_state = s3
     a = s3.get_available_actions()[0]
-    print(a)
     out3 = env3.step(a)
     assert out3 == (s3_, -2., True)
 
