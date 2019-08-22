@@ -63,11 +63,9 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=10, f
     print(subgoals)
 
     # Write subgoals to a txt file
-    f = open(out_path, "w+")
-    for s in subgoals:
-        f.write(s)
-        f.write("\n")
-    f.close()
+    with open(out_path, "w+") as f:
+        f.writelines(subgoals)
+    
     return subgoals
 
 def string_to_list(string):
@@ -88,7 +86,7 @@ def string_to_list(string):
     # Construct state
     hps = heart_peg_state(state=state)
 
-    assert hps.is_state_legal()
+    assert hps.is_state_legal(),  str(hps)
 
     return state
 

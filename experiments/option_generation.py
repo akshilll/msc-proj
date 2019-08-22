@@ -108,13 +108,15 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     # Path where the subgoals reside
     sg_file_path = "subgoals/{}.txt".format(centrality)
 
+    # Read in graph without symmetry
+    graph = nx.read_gexf(graph_path)
+
     # Open it up
     f = open(sg_file_path, "r")
 
-    # Read in graph without symmetry
-    graph = nx.read_gexf(graph_path)
+    
     for s in f:
-        
+        print(s)
         state = string_to_list(s)
         symm_state = state.symm_state
 
@@ -137,7 +139,4 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     # Close the file
     f.close()
 
-
-
-
-
+    return subgoals
