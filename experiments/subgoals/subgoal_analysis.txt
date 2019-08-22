@@ -1,0 +1,75 @@
+Betweenness subgoals:
+	
+1) 2 moves from initial state. Clears up much of the central line which allows edge pieces to come in.
+2) 2 moves from initial state 
+3) 5 moves in
+4) 3 moves in
+5) 9 moves in
+6) 4 moves in
+7) 7 moves in
+8) 9 moves in
+9) 6 moves in
+10) 6 moves in
+
+I think it makes sense to have subgoals near the start as well as middle and nearing end because, you can lose the game very early.
+
+Closeness :
+
+1) 1 move from win - trivial
+2) Terminal losing state
+3) Terminal losing state
+4) Terminal losing state
+5) Terminal losing state
+6) Terminal losing state
+7) Terminal losing state
+8) Terminal losing state
+9) 1 move from losing state, can only lose from here
+10) Terminal losing state
+
+Degree:
+1) 6 moves in
+2) 7 moves in 
+3) 3 moves in
+4) 8 moves in
+5) 7 moves in
+6) 5 moves in
+7) 5 moves in
+8) 6 moves in
+9) 6 moves in
+10) 6 moves in
+
+Eigenvector:
+1) Winning state
+2) Losing state
+3) Losing state
+4) Losing state
+5) Losing state
+6) Losing state
+7) Losing state
+8) Losing state
+9) Losing state
+10) Losing State
+
+Katz : 
+1) 1 from losing
+2) 7 pegs, can win
+3) 6 pegs, can't win
+4) 5 pegs, can't win
+5) 7 pegs, can't win
+6) 6 pegs terminal loss
+7) 6 pegs terminal loss
+8) 3 pegs, 2 moves from winning - guaranteed win
+9) 5 pegs, 1 move from loss
+10) 6 pegs, can't win
+
+Load :
+1) Same as betweenness 1 - 2 moves from init
+2) Same as betweenness 2 - 2 moves from init
+3) 5 moves in
+4) 5 moves in
+5) 4 moves in
+6) 10 moves in, good subgoal
+7) 10 moves in, good subgoal
+8) 6 moves in, good subgoal
+9) 7 moves in, good subgoal - leads to a win
+10) 8 moves in, good subgoal - leads to a win
