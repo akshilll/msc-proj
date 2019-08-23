@@ -6,7 +6,7 @@ import networkx as nx
 
 from itertools import product
 from barl_simpleoptions.state import State
-from barl_simpleoptions.environment import Environment
+from barl_simpleoptions.environment import Environment, BaseEnvironment
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from typing import List, Tuple
@@ -290,7 +290,7 @@ class heart_peg_state(State):
 
 
 
-class heart_peg_env(Environment):
+class heart_peg_env(BaseEnvironment):
 	"""Implementation of an environment for the heart shaped version of peg solitaire
 
 	Attributes:
@@ -301,7 +301,7 @@ class heart_peg_env(Environment):
 
 	"""
 	
-	def __init__(self, options : List['Option'], intermediate_reward=-1e-4, win_reward=1.):
+	def __init__(self, options : List['Option'], intermediate_reward=0, win_reward=1.):
 		
 		self.options = options
 		self.current_state = None
@@ -325,7 +325,7 @@ class heart_peg_env(Environment):
 		
 		# Count number of pegs remaining to get reward
 		pegs_remaining = np.sum(self.current_state.state)
-		print(self.current_state)
+		
 
 		# If the game is over
 		if self.current_state.is_terminal_state():
@@ -339,7 +339,7 @@ class heart_peg_env(Environment):
 				
 		# The game is still afoot!
 		else:
-			print(self.current_state)
+			
 			game_over = False
 			reward = self.intermediate_reward
 
@@ -375,13 +375,13 @@ class heart_peg_env(Environment):
 		return self.current_state.get_available_actions()
 	
 	# Improved version of Josh's code
-	def get_available_options(self):
-		"""Finds all available options for this 
+	# def get_available_options(self):
+	# 	"""Finds all available options for this 
 
-		Returns : 
-		List[Option] -- list of options whose initiation set contain the current state
-		"""
-		available_options = [option for option in self.options if option.initiation(self.current_state)]
-		return available_options
+	# 	Returns : 
+	# 	List[Option] -- list of options whose initiation set contain the current state
+	# 	"""
+	# 	available_options = [option for option in self.options if option.initiation(self.current_state)]
+	# 	return available_options
 
 

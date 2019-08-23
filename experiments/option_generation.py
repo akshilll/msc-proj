@@ -118,7 +118,6 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
 
     
     for s in subgoal_strings:
-        print(s)
         state = string_to_list(s)
         sg_state = heart_peg_state(state=state)
         symm_state = sg_state.symm_state
