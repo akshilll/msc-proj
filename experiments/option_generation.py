@@ -7,6 +7,7 @@ import networkx as nx
 import functools
 import operator
 import os
+import pickle
 
 class sg_option(SubgoalOption):
     # Slightly altered version of Josh's __init__
@@ -22,13 +23,13 @@ class sg_option(SubgoalOption):
             
             # Load the policy file for this option.
             with open(policy_file_path, mode = "rb") as f:
-                self.policy_dict = json.load(f)
+                self.policy_dict = pickle.load(f)
         else:
             # Generate policy
             self.policy_dict = self.generate_policy_dict()
             # Write it to a file for later
-            with open("subgoals/policies/{}_policy.json", "wb") as f:
-                json.dump(self.policy_dict, f)
+            with open("subgoals/policies/{}_policy.format".format(str(subgoal)), "wb") as f:
+                pickle.dump(self.policy_dict, f)
 
     # Slightly modified version of Josh's code in github.com/Ueva/Betweenness-Project/Code/Simple%20Numpile%20Experiments/options.py
     def generate_policy_dict(self):
@@ -69,9 +70,9 @@ class sg_option(SubgoalOption):
                 action = state.get_transition_action(next_state)
                 policy_dict[state_string] = action
         return policy_dict
-
-
-
+    
+    def __str__(self):
+        return "SubgoalOption({})".format(str(self.subgoal))
             
 
 def generate_primitive_options(graph_path="graphs/heart_peg_solitaire_graph_without_symm.gexf"):
@@ -113,14 +114,14 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
 
     # Open it up
     f = open(sg_file_path, "r")
+    subgoal_strings = json.load(f)
 
     
-    for s in f:
+    for s in subgoal_strings:
         print(s)
         state = string_to_list(s)
-        symm_state = state.symm_state
-
         sg_state = heart_peg_state(state=state)
+        symm_state = sg_state.symm_state
         sg_symm_state = heart_peg_state(state=symm_state)
 
         if os.path.exists("subgoals/policies/{}.json".format(str(sg_state))):
@@ -139,4 +140,4 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     # Close the file
     f.close()
 
-    return subgoals
+    return list(set(subgoals))

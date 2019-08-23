@@ -51,8 +51,6 @@ class heart_peg_state(State):
 		"""
 		return str(self.state)
 
-	
-
 
 	def __eq__(self, other_state) -> bool :
 		'''Check equality of states 
@@ -280,18 +278,15 @@ class heart_peg_state(State):
 	def get_transition_action(self, next_state : 'State') :
 		"""
         Get list of actions to enable transition
-        
         Arguments:
             next_state (state) -- successive state to work out action for
         Returns:
             List[actions] -- List of actions 
         """
-		
-		out = [a for a in self.get_available_actions() if next_state in self.take_action(a)]
-
-		return out
-
-		
+		for a in self.get_available_actions():
+			if next_state.state == self.take_action(a)[0].state:
+				return a
+		return (-2, (-2, -2))
 
 
 

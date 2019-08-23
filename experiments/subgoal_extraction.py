@@ -4,6 +4,8 @@ from heart_peg_solitaire import heart_peg_state
 import numpy as np
 import re
 import json
+import pickle
+
 graph_path = "graphs/heart_peg_solitaire_graph.gexf"
 
 def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=10, file_path="subgoals/"):
@@ -62,9 +64,10 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=10, f
 
     print(subgoals)
 
+
     # Write subgoals to a txt file
-    with open(out_path, "w+") as f:
-        f.writelines(subgoals)
+    with open(out_path, "wb") as f:
+        pickle.dump(subgoals, f)
     
     return subgoals
 
