@@ -39,7 +39,7 @@ episode_returns = primitive_agent.run_agent(num_epi)
 
 
 # Save Return Graph.
-plt.plot(range(1, num_epi + 1), np.cumsum(episode_returns))
+plt.plot(range(1, num_epi + 1), episode_returns)
 plt.title("Agent Training Curve")
 plt.xlabel("Episode Number")
 plt.ylabel("Episode Return")
