@@ -6,41 +6,52 @@ import networkx as nx
 import pickle
 import numpy as np 
 import matplotlib.pyplot as plt
+import time 
+import multiprocessing as mp
 
-# Read in graphs
-graph = nx.read_gexf("graphs/heart_peg_solitaire_graph.gexf")
-graph_without_symm = nx.read_gexf("graphs/heart_peg_solitaire_graph_without_symm.gexf")
+def run_experiment(num_agents, num_epi, centrality=None):
+	# Read in graphs
+	graph = nx.read_gexf("graphs/heart_peg_solitaire_graph.gexf")
+	graph_without_symm = nx.read_gexf("graphs/heart_peg_solitaire_graph_without_symm.gexf")
 
-print("Graphs are in")
+	print("Graphs are in")
 
-# Generate options
-primitive_options = generate_primitive_options()
-print("{} Primitive options generated".format(len(primitive_options)))
+	# Generate options
+	options = generate_primitive_options()
+	print("{} Primitive options generated".format(len(options)))
 
-betweenness_subgoal_options = generate_subgoal_options("betweenness")
-primitive_options += betweenness_subgoal_options
-#print("{} Betweenness subgoal options generated")
+	results_path  = "results/primitive_results.pickle"
 
-env = heart_peg_env(options=primitive_options)
+	if centrality is not None:
+		subgoal_options = generate_subgoal_options(centrality)
+		print("{} Betweenness subgoal options generated")
+		results_path  = "results/{}_results.pickle".format(centrality)
 
-print("environment generated")
+		options += subgoal_options
 
-primitive_agent = OptionAgent(env)
 
-print("agent made")
+	env = heart_peg_env(options=options)
 
-num_epi = 500
-num_agents = 1
-episode_returns = [0] * num_agents 
-episode_returns = primitive_agent.run_agent(num_epi)
+	print("environment generated")
+
 	
 
-#episode_returns = np.array(episode_returns).reshape((num_agents, num_epi)).mean(axis=0)
+	print("agent made")
+	
+	# Time it
+	start_time = time.time()
+	
+	agents = [OptionAgent(env) for _ in range(num_agents)]
+	episode_returns = [agent.run_agent(num_epi) for agent in agents]
 
+	# Save data
+	f = open(results_path, "wb+")
+	pickle.dump(episode_returns, f)
+	f.close()
 
-# Save Return Graph.
-plt.plot(range(1, num_epi + 1), episode_returns)
-plt.title("Agent Training Curve")
-plt.xlabel("Episode Number")
-plt.ylabel("Episode Return")
-plt.savefig("episode_returns.png")
+	print("Total time was {}".format(time.time() - start_time))
+
+	return episode_returns
+
+if __name__ == "__main__":
+	ret = run_experiment(250, 1000)

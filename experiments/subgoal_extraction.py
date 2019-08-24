@@ -66,7 +66,7 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=10, f
 
 
     # Write subgoals to a txt file
-    with open(out_path, "wb") as f:
+    with open(out_path, "wb+") as f:
         pickle.dump(subgoals, f)
     
     return subgoals
