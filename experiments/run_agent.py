@@ -8,14 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time 
 import multiprocessing as mp
+import sys
 
 def run_experiment(num_agents, num_epi, centrality=None):
-	# Read in graphs
-	graph = nx.read_gexf("graphs/heart_peg_solitaire_graph.gexf")
-	graph_without_symm = nx.read_gexf("graphs/heart_peg_solitaire_graph_without_symm.gexf")
-
-	print("Graphs are in")
-
 	# Generate options
 	options = generate_primitive_options()
 	print("{} Primitive options generated".format(len(options)))
@@ -34,22 +29,19 @@ def run_experiment(num_agents, num_epi, centrality=None):
 
 	print("environment generated")
 
-	
-
-	print("agent made")
-	
 	# Time it
 	start_time = time.time()
 	
 	agents = [OptionAgent(env) for _ in range(num_agents)]
 	episode_returns = [agent.run_agent(num_epi) for agent in agents]
 
+	print("Total time was {}".format(time.time() - start_time))
+
 	# Save data
 	f = open(results_path, "wb+")
 	pickle.dump(episode_returns, f)
 	f.close()
 
-	print("Total time was {}".format(time.time() - start_time))
 
 	return episode_returns
 
