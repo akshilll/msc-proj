@@ -11,7 +11,7 @@ import pickle
 
 class sg_option(SubgoalOption):
     # Slightly altered version of Josh's __init__
-    def __init__(self, subgoal, graph, initiation_set_size=5, policy_file_path=None):
+    def __init__(self, subgoal, graph, initiation_set_size=8, policy_file_path=None):
         self.graph = graph
         self.subgoal = subgoal
         self.initiation_set_size = initiation_set_size

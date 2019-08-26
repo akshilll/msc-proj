@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import time 
 import multiprocessing as mp
 import sys
+import datetime
 
 def run_experiment(num_agents, num_epi, centrality=None):
 	# Generate options
@@ -46,4 +47,21 @@ def run_experiment(num_agents, num_epi, centrality=None):
 	return episode_returns
 
 if __name__ == "__main__":
-	ret = run_experiment(200, 1000, centrality=None)
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="betweenness")
+	print("betweenness done")
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="katz")
+	print("katz done")
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="eigenvector")
+	print("eigenvector done")
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="load")
+	print("load done")
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="closeness")
+	print("closeness done")
+	print(datetime.datetime.now())
+	run_experiment(200, 1000, centrality="degree")
+	print("degree done")
