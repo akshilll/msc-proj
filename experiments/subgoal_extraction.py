@@ -8,7 +8,7 @@ import pickle
 
 graph_path = "graphs/heart_peg_solitaire_graph.gexf"
 
-def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=10, file_path="subgoals/"):
+def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=15, file_path="subgoals/"):
     
     out_path = file_path + centrality + ".txt"
 

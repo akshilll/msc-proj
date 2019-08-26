@@ -19,7 +19,7 @@ def run_experiment(num_agents, num_epi, centrality=None):
 
 	if centrality is not None:
 		subgoal_options = generate_subgoal_options(centrality)
-		print("{} Betweenness subgoal options generated")
+		print("{} Betweenness subgoal options generated".format(len(subgoal_options)))
 		results_path  = "results/{}_results.pickle".format(centrality)
 
 		options += subgoal_options
@@ -46,4 +46,4 @@ def run_experiment(num_agents, num_epi, centrality=None):
 	return episode_returns
 
 if __name__ == "__main__":
-	ret = run_experiment(250, 1000)
+	ret = run_experiment(200, 1000, centrality=None)

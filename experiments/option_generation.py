@@ -113,8 +113,8 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     graph = nx.read_gexf(graph_path)
 
     # Open it up
-    f = open(sg_file_path, "r")
-    subgoal_strings = json.load(f)
+    f = open(sg_file_path, "rb")
+    subgoal_strings = pickle.load(f)
 
     
     for s in subgoal_strings:
@@ -123,13 +123,13 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
         symm_state = sg_state.symm_state
         sg_symm_state = heart_peg_state(state=symm_state)
 
-        if os.path.exists("subgoals/policies/{}.json".format(str(sg_state))):
-            policy_fp = "subgoals/policies/{}.json".format(str(sg_state))
+        if os.path.exists("subgoals/policies/{}.pickle".format(str(sg_state))):
+            policy_fp = "subgoals/policies/{}.pickle".format(str(sg_state))
         else: 
             policy_fp = None
         
-        if os.path.exists("subgoals/policies/{}.json".format(str(sg_symm_state))):
-            policy_fp_symm = "subgoals/policies/{}.json".format(str(sg_symm_state))
+        if os.path.exists("subgoals/policies/{}.pickle".format(str(sg_symm_state))):
+            policy_fp_symm = "subgoals/policies/{}.pickle".format(str(sg_symm_state))
         else: 
             policy_fp_symm = None
 
