@@ -20,7 +20,7 @@ def run_experiment(num_agents, num_epi, centrality=None):
 
 	if centrality is not None:
 		subgoal_options = generate_subgoal_options(centrality)
-		print("{} Betweenness subgoal options generated".format(len(subgoal_options)))
+		print("{} subgoal options generated".format(len(subgoal_options)))
 		results_path  = "results/{}_results.pickle".format(centrality)
 
 		options += subgoal_options
@@ -39,8 +39,14 @@ def run_experiment(num_agents, num_epi, centrality=None):
 	print("Total time was {}".format(time.time() - start_time))
 
 	# Save data
-	f = open(results_path, "wb+")
-	pickle.dump(episode_returns, f)
+	f = open(results_path, "rb")
+	old_returns = pickle.load(f)
+	f.close()
+	
+	old_returns += episode_returns
+	
+	f = open(results_path, "wb")
+	pickle.dump(old_returns, f)
 	f.close()
 
 
@@ -49,19 +55,4 @@ def run_experiment(num_agents, num_epi, centrality=None):
 if __name__ == "__main__":
 	print(datetime.datetime.now())
 	run_experiment(200, 1000, centrality="betweenness")
-	print("betweenness done")
-	print(datetime.datetime.now())
-	run_experiment(200, 1000, centrality="katz")
-	print("katz done")
-	print(datetime.datetime.now())
-	run_experiment(200, 1000, centrality="eigenvector")
-	print("eigenvector done")
-	print(datetime.datetime.now())
-	run_experiment(200, 1000, centrality="load")
-	print("load done")
-	print(datetime.datetime.now())
-	run_experiment(200, 1000, centrality="closeness")
-	print("closeness done")
-	print(datetime.datetime.now())
-	run_experiment(200, 1000, centrality="degree")
 	print("degree done")
