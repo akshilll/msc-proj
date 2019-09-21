@@ -6,7 +6,7 @@ from typing import List
 from barl_simpleoptions.state import State
 
 
-# Josh's code, slightly optimised by me
+# Josh's code, slightly optimised by me found https://github.com/Ueva/BaRL-SimpleOptions/blob/master/barl_simpleoptions/state.py
 def generate_interaction_graph(initial_states : List['State']) :
 	"""
 	Generates the state-transition graph for this environment.
