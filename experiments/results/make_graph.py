@@ -26,13 +26,17 @@ f5.close()
 f6.close()
 f7.close()
 
-# plt.plot(np.array(out).mean(0), label="betweenness")
-# plt.plot(np.array(out2).mean(0), label="closeness")
-# plt.plot(np.array(out3).mean(0), label="degree")
-# plt.plot(np.array(out4).mean(0), label="eigenvector")
-# plt.plot(np.array(out5).mean(0), label="katz")
+
+plt.plot(np.array(out).mean(0), label="betweenness")
+plt.plot(np.array(out2).mean(0), label="closeness")
+plt.plot(np.array(out3).mean(0), label="degree")
+plt.plot(np.array(out4).mean(0), label="eigenvector")
+plt.plot(np.array(out5).mean(0), label="katz")
 plt.plot(np.array(out6).mean(0), label="load")
 plt.plot(np.array(out7).mean(0), label="primitive")
 plt.grid()
 plt.legend()
+# plt.savefig("betvsload.png")
+# plt.close()#
+
 plt.show()

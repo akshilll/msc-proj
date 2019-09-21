@@ -2,13 +2,15 @@ import numpy as np
 from barl_simpleoptions.option import PrimitiveOption, SubgoalOption
 from heart_peg_solitaire import heart_peg_state
 from subgoal_extraction import string_to_list
-import json
+
 import networkx as nx
 import functools
 import operator
 import os
 import pickle
 
+
+# Subgoal Option class based mostly on Josh's code from https://github.com/Ueva/Betweenness-Project
 class sg_option(SubgoalOption):
     # Slightly altered version of Josh's __init__
     def __init__(self, subgoal, graph, initiation_set_size=8, policy_file_path=None):
@@ -116,7 +118,7 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     f = open(sg_file_path, "rb")
     subgoal_strings = pickle.load(f)
 
-    
+    # Generate subgoals and symmetry subgoals and pickle them
     for s in subgoal_strings:
         state = string_to_list(s)
         sg_state = heart_peg_state(state=state)
