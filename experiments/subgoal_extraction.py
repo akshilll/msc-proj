@@ -8,7 +8,7 @@ import pickle
 
 graph_path = "graphs/heart_peg_solitaire_graph.gexf"
 
-def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=15, file_path="subgoals/"):
+def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=5, file_path="subgoals/"):
     
     out_path = file_path + centrality + ".txt"
 
@@ -20,22 +20,22 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=15, f
         metric_values = nx.algorithms.centrality.betweenness_centrality(graph)
     
     elif centrality == "closeness":
-        metric_values = nx.algorithms.centrality.closeness_centrality(graph)
+        metric_values = nx.algorithms.centrality.closeness_centrality(graph.reverse())
 
     elif centrality == "degree":
         metric_values = nx.algorithms.centrality.degree_centrality(graph)
 
     elif centrality == "eigenvector":
-        metric_values = nx.algorithms.centrality.eigenvector_centrality(graph, max_iter=10000)
+        metric_values = nx.algorithms.centrality.eigenvector_centrality(graph.reverse(), max_iter=10000)
 
     elif centrality == "katz":
-        metric_values = nx.algorithms.centrality.katz_centrality(graph, max_iter=10000)
+        metric_values = nx.algorithms.centrality.katz_centrality(graph.reverse(), max_iter=10000)
 
     elif centrality == "load":
         metric_values = nx.algorithms.centrality.load_centrality(graph)
 
     elif centrality == "pagerank":
-        metric_values = networkx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
+        metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
 
     assert len(metric_values) == len(graph)
 
@@ -65,7 +65,7 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=15, f
         subgoals = [key for key in sorted(subgoal_dict, key=subgoal_dict.get, reverse=True)[:n_subgoals]]
 
 
-    print(subgoals)
+    print(centrality, subgoals)
 
 
     # Write subgoals to a txt file

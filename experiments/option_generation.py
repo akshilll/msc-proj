@@ -13,7 +13,7 @@ import pickle
 # Subgoal Option class based mostly on Josh's code from https://github.com/Ueva/Betweenness-Project
 class sg_option(SubgoalOption):
     # Slightly altered version of Josh's __init__
-    def __init__(self, subgoal, graph, initiation_set_size=8, policy_file_path=None):
+    def __init__(self, subgoal, graph, initiation_set_size=20, policy_file_path=None):
         self.graph = graph
         self.subgoal = subgoal
         self.initiation_set_size = initiation_set_size
@@ -101,8 +101,9 @@ def generate_primitive_options(graph_path="graphs/heart_peg_solitaire_graph_with
     return primitive_options
 
 def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_graph_without_symm.gexf"):
-    
-    if centrality not in ["betweenness", "closeness", "degree", "eigenvector", "katz", "load"]:
+    print("Generating subgoals for {}".format(centrality))
+
+    if centrality not in ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]:
         raise Exception("You have not chosen an available centrality measure!")
     assert type(centrality) == str
 

@@ -30,8 +30,6 @@ class heart_peg_state(State):
 	'''
 
 	def __init__(self, state):	
-
-		
 		self.state = state
 		self.gap_list = np.where(np.array(state) == 0)[0].tolist()
 		self.symm_state = self.symmetry_state()

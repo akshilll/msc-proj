@@ -1,7 +1,7 @@
 from option_generation import generate_primitive_options, generate_subgoal_options
 
 
-centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load"]
+centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]
 
 # Run option generation for each centrality
 for c in centralities:
