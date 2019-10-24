@@ -16,13 +16,13 @@ def run_experiment(num_agents, num_epi, centrality=None):
 	options = generate_primitive_options()
 	print("{} Primitive options generated".format(len(options)))
 
-	results_path  = "results/primitive_results.pickle"
+	results_path  = "results2/primitive_results.pickle"
 	
 	# Add subgoal options
 	if centrality is not None:
 		subgoal_options = generate_subgoal_options(centrality)
 		print("{} subgoal options generated".format(len(subgoal_options)))
-		results_path  = "results/{}_results.pickle".format(centrality)
+		results_path  = "results2/{}_results.pickle".format(centrality)
 
 		options += subgoal_options
 

@@ -34,6 +34,9 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=15, f
     elif centrality == "load":
         metric_values = nx.algorithms.centrality.load_centrality(graph)
 
+    elif centrality == "pagerank":
+        metric_values = networkx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
+
     assert len(metric_values) == len(graph)
 
     # Get local maxima 
