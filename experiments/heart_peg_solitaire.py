@@ -50,19 +50,17 @@ class heart_peg_state(State):
 		return str(self.state)
 
 
-	def __eq__(self, other_state, symm=True) -> bool :
+	def __eq__(self, other_state) -> bool :
 		'''Check equality of states 
 		Arguments:
 			other_state (State) -- Object for comparison to this State 
-			symm (bool) -- if true then consider symmetrical states to be equal
 
 		Returns: 
 			bool -- True iff other_state is equal to state of reflection
 		'''
-		if not symm:
-			return hash(str(self.state)) == hash(str(other_state.state)) 
-		else:
-			return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
+		# toggle between these lines to account for symmetry or not!
+		#return hash(str(self.state)) == hash(str(other_state.state)) 
+		return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
 	
 	def __hash__(self):
 		return hash(str(self.state))
