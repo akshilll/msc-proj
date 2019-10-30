@@ -301,7 +301,7 @@ class heart_peg_env(BaseEnvironment):
 
 	"""
 	
-	def __init__(self, options : List['Option'], intermediate_reward=0, win_reward=1.):
+	def __init__(self, options : List['Option'], intermediate_reward=0., win_reward=1.):
 		
 		self.options = options
 		self.current_state = None

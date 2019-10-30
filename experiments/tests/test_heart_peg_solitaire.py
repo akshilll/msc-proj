@@ -316,7 +316,7 @@ def test_reset():
     env = heart_peg_env(options = [])
     
     assert env.current_state is None
-    assert env.intermediate_reward == -1e-4
+    assert env.intermediate_reward == 0
 
     env.reset()
 

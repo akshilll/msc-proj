@@ -35,7 +35,7 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=5, fi
         metric_values = nx.algorithms.centrality.load_centrality(graph)
 
     elif centrality == "pagerank":
-        metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
+        metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph.reverse())
 
     assert len(metric_values) == len(graph)
 
