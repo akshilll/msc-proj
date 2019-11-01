@@ -58,7 +58,8 @@ class heart_peg_state(State):
 		Returns: 
 			bool -- True iff other_state is equal to state of reflection
 		'''
-		return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
+		return hash(str(self.state)) == hash(str(other_state.state))
+		#return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
 	
 	def __hash__(self):
 		return hash(str(self.state))

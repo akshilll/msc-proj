@@ -61,7 +61,48 @@ def write_graph(file_path):
 	init_state = heart_peg_state(state = start_state)	
 
 	interaction_graph = generate_interaction_graph(initial_states = [init_state])
-	print(interaction_graph)
+	
+	
 	nx.write_gexf(interaction_graph, file_path)
 
+def add_centrality_attr(centrality, file_path="graphs/heart_peg_solitaire_graph.gexf"):
+	graph = nx.read_gexf(file_path)
+	
+	assert type(centrality) == str
+
+	if centrality == "betweenness":
+		metric_values = nx.algorithms.centrality.betweenness_centrality(graph)
+    
+	elif centrality == "closeness":
+		metric_values = nx.algorithms.centrality.closeness_centrality(graph.reverse())
+
+	elif centrality == "degree":
+		metric_values = nx.algorithms.centrality.degree_centrality(graph)
+
+	elif centrality == "eigenvector":
+		metric_values = nx.algorithms.centrality.eigenvector_centrality(graph.reverse(), max_iter=10000)
+
+	elif centrality == "katz":
+		metric_values = nx.algorithms.centrality.katz_centrality(graph.reverse(), max_iter=10000)
+
+	elif centrality == "load":
+		metric_values = nx.algorithms.centrality.load_centrality(graph)
+
+	elif centrality == "pagerank":
+		metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
+	
+	elif centrality == "out_degree":
+		metric_values = nx.algorithms.centrality.out_degree_centrality(graph)
+
+	nx.set_node_attributes(graph, metric_values, centrality)
+	
+	nx.write_gexf(graph, file_path)
+	
+	return True
+
+def add_all_graph_attrs(file_path="graphs/heart_peg_solitaire_graph.gexf"):
+	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
+
+	for c in centralities:
+		add_centrality_attr(c, file_path)
 
