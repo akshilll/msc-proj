@@ -35,7 +35,7 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=5, fi
         metric_values = nx.algorithms.centrality.load_centrality(graph)
 
     elif centrality == "pagerank":
-        metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
+        metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph.reverse())
 
     assert len(metric_values) == len(graph)
 
@@ -61,6 +61,7 @@ def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=5, fi
     # We only want a certain number of subgoals so get the best ones
     if len(subgoals) > n_subgoals:
         subgoal_dict = {s: metric_values[s] for s in subgoals}
+        
         # Get subgoals with highest value
         subgoals = [key for key in sorted(subgoal_dict, key=subgoal_dict.get, reverse=True)[:n_subgoals]]
 

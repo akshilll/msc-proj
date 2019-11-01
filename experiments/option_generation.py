@@ -122,9 +122,15 @@ def generate_subgoal_options(centrality, graph_path="graphs/heart_peg_solitaire_
     # Generate subgoals and symmetry subgoals and pickle them
     for s in subgoal_strings:
         state = string_to_list(s)
+        print(state)
         sg_state = heart_peg_state(state=state)
         symm_state = sg_state.symm_state
         sg_symm_state = heart_peg_state(state=symm_state)
+
+        # If the subgoal is the initial state 
+        if sq_state.is_initial_state():
+            print(centrality, "INITIAL STATE FOUND AS SUBGOAL")
+            continue
 
         if os.path.exists("subgoals/policies/{}.pickle".format(str(sg_state))):
             policy_fp = "subgoals/policies/{}.pickle".format(str(sg_state))
