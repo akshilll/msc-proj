@@ -1,5 +1,5 @@
-# msc-proj
-Experiments for my MSc project in skill acquisition... everything is in the experiments folder!
+# Graph Centrality for Option Discovery
+Experiments comparing graph centrality measures in subgoal detection for option discovery
 
 ## Setup
 

@@ -1,0 +1,34 @@
+Metadata-Version: 2.1
+Name: centrality-experiments
+Version: 0.0.1
+Summary: Experiments comparing centrality measures for option discovery
+Home-page: https://github.com/akshilll/centrality_experiments
+Author: Akshil Patel
+Author-email: akshilpatel11@gmail.com
+License: UNKNOWN
+Description: # Graph Centrality for Option Discovery
+        Experiments comparing graph centrality measures in subgoal detection for option discovery
+        
+        ## Setup
+        
+        Running the code in this repo requires the installation of BaRL_SimpleOptions which can be found [here](https://github.com/Ueva/BaRL-SimpleOptions) as well as **networkx**, **numpy** and **pickle**.
+        
+        
+        ## Running
+        
+        To run the experiments navigate to **experiments/** and run **run_agent.py** which will generate options for each centrality from a previously computed graph and run 1000 episodes for 400 agents for each centrality and one for a primitive Q learning agent. The results will be pickled and stored in **experiments/results/**. **experiments/results/make_graph.py** can be used to generate figures displaying the results. 
+        
+        
+        
+        
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Natural Language :: English
+Description-Content-Type: text/markdown
