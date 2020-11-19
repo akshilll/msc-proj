@@ -14,7 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/akshilll/centrality_experiments",
     packages=setuptools.find_packages(),
-    install_requires=["numpy", "gym", "matplotlib", "tensorflow"],
+    install_requires=["numpy", "gym", "networkx", "pydot"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

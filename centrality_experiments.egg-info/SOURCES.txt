@@ -11,8 +11,8 @@ centrality_experiments/environments/heart_peg_solitaire.py
 centrality_experiments/graphs/__init__.py
 centrality_experiments/src/__init__.py
 centrality_experiments/src/graph_generation.py
-centrality_experiments/src/make_graph.py
 centrality_experiments/src/option_generation.py
+centrality_experiments/src/plot_results.py
 centrality_experiments/src/run_agent.py
 centrality_experiments/src/run_exp.py
 centrality_experiments/src/run_graph_generation.py

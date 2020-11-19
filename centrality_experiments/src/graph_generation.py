@@ -4,6 +4,7 @@ import networkx as nx
 from centrality_experiments.environments.heart_peg_solitaire import heart_peg_env, heart_peg_state
 from typing import List
 from barl_simpleoptions.state import State
+from networkx.drawing.nx_pydot import write_dot
 
 
 # Josh's code, slightly optimised by me found https://github.com/Ueva/BaRL-SimpleOptions/blob/master/barl_simpleoptions/state.py
@@ -13,6 +14,8 @@ def generate_interaction_graph(initial_states : List['State']) :
 	"""
 	states = []
 	current_successor_states = []
+	steps_from_initial = []
+	steps_tmp = 0
 
 	# Add initial states to current successor list.
 	current_successor_states = deepcopy(initial_states)
@@ -20,11 +23,12 @@ def generate_interaction_graph(initial_states : List['State']) :
 	# While we have new successor states to process.
 	while (len(current_successor_states) != 0) :
 		# Add each current new successor to our list of processed states.
-		
+		steps_tmp += 1
 		next_successor_states = []
 		for successor_state in current_successor_states :
 			if (successor_state not in states) :
 				states.append(successor_state)
+				steps_from_initial.append(steps_tmp)
 
 				# Add this state's successors to the successor list.
 				if (not successor_state.is_terminal_state()) : 
@@ -105,4 +109,10 @@ def add_all_graph_attrs(file_path="./centrality_experiments/graphs/heart_peg_sol
 
 	for c in centralities:
 		add_centrality_attr(c, file_path)
+
+def gexf_to_dot(path_in="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
+	graph = nx.read_gexf(path_in)
+	path_out = path_in.split('gexf')[0] + 'dot'
+
+	write_dot(graph, path_out)
 
