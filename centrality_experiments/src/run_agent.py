@@ -14,17 +14,31 @@ import sys
 import datetime
 
 
+
+
 # TODO: change this to have all running functionality in this file with if file exists statements to save time. 
-def run_experiment(num_agents, num_epi, centrality=None):
+def run_experiment(num_agents, num_epi, centrality=None, graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
+	"""
+	TODO: make the function behave as follows by calling other functions if required.
+	Input: environment, num_subgoals, centrality, num_agents, num_episode
+	1) If the graph does not exist, generate a graph and save it somewhere
+	2) If the subgoals do not exist, generate the subgoals and save them somewhere
+	3) If the primitive options do not exist generate them and save 
+	4) If the subgoal options do not exist, generate them and save
+	5) Run the experiments for each agent and save pickled results
+	"""
+
+	
+	
 	# Generate primitive options
-	options = generate_primitive_options()
+	options = generate_primitive_options(graph_path=graph_path)
 	print("{} Primitive options generated".format(len(options)))
 
 	results_path  = "./centrality_experiments/results/primitive_results.pickle"
 	
 	# Add subgoal options
 	if centrality is not None:
-		subgoal_options = generate_subgoal_options(centrality)
+		subgoal_options = generate_subgoal_options(centrality, graph_path=graph_path)
 		print("{} subgoal options generated".format(len(subgoal_options)))
 		results_path  = "./centrality_experiments/results/{}_results.pickle".format(centrality)
 

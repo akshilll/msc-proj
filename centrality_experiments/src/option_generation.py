@@ -79,7 +79,7 @@ class sg_option(SubgoalOption):
         return "SubgoalOption({})".format(str(self.subgoal))
             
 
-def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph_without_symm.gexf"):
+def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
     """Gets all possible actions from a graph and generates list of PrimitiveOptions
 
     Arguments:
@@ -102,7 +102,7 @@ def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart
 
     return primitive_options
 
-def generate_subgoal_options(centrality, graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph_without_symm.gexf"):
+def generate_subgoal_options(centrality, graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
     print("Generating subgoals for {}".format(centrality))
 
     if centrality not in ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]:

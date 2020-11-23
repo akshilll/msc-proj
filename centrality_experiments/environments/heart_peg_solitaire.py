@@ -40,7 +40,7 @@ class heart_peg_state(State):
 		self.board_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 			
 
-	def __str__(self) -> str :
+	def __str__(self) -> str:
 		"""String representation of state
 		Returns:
 			String of state attribute of input
@@ -48,7 +48,7 @@ class heart_peg_state(State):
 		return str(self.state)
 
 
-	def __eq__(self, other_state) -> bool :
+	def __eq__(self, other_state) -> bool:
 		'''Check equality of states 
 		Arguments:
 			other_state (State) -- Object for comparison to this State 
@@ -60,7 +60,7 @@ class heart_peg_state(State):
 		return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
 	
 	def __hash__(self):
-		return hash(str(self.state))
+		return hash(str(self))
 
 	def symmetry_state(self):
 		'''Reflects state in vertical axis
@@ -88,7 +88,7 @@ class heart_peg_state(State):
 			  '      ', self.state[15])
 
 
-	def is_state_legal(self) -> bool :
+	def is_state_legal(self) -> bool:
 		"""
         Determines whether or not the current state is legal.
         Returns:
@@ -118,7 +118,7 @@ class heart_peg_state(State):
 		# If it's made it this far then it's legal!
 		return True
 
-	def is_initial_state(self) -> bool :
+	def is_initial_state(self) -> bool:
 		"""
         Returns whether or not this state is an initial state.
         Returns:
@@ -130,7 +130,7 @@ class heart_peg_state(State):
 
 		return self.state == start_state
 
-	def is_terminal_state(self) -> bool :
+	def is_terminal_state(self) -> bool:
 		"""
         Returns whether or not this is a terminal state.
         
@@ -196,7 +196,7 @@ class heart_peg_state(State):
 		return [s]
 
 	
-	def is_action_legal(self, action) -> bool :
+	def is_action_legal(self, action) -> bool:
 		''' Check action is legal
 		Check gap is on board
 		Check direction is legal
@@ -336,7 +336,6 @@ class heart_peg_env(BaseEnvironment):
 		return deepcopy(self.current_state), float(reward), game_over
 		
 
-		
 	def reset(self):
 		""" Resets environment to initial state
 		Returns : 

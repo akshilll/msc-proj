@@ -2,6 +2,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
+# TODO: Make this code reusable and less repeated.
+
 f = open("./centrality_experiments/results/betweenness_results.pickle", "rb")
 f2 = open("./centrality_experiments/results/closeness_results.pickle", "rb")
 f3 = open("./centrality_experiments/results/degree_results.pickle", "rb")

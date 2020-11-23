@@ -106,15 +106,9 @@ def add_centrality_attr(centrality, file_path="./centrality_experiments/graphs/h
 
 def add_all_graph_attrs(file_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
 	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
-
+	
 	for c in centralities:
 		add_centrality_attr(c, file_path)
-
-def gexf_to_dot(path_in="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
-	graph = nx.read_gexf(path_in)
-	path_out = path_in.split('gexf')[0] + 'dot'
-
-	write_dot(graph, path_out)
 
 
 
@@ -123,4 +117,3 @@ if __name__=="__main__":
 	file_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
 	write_graph(file_path=file_path)
 	add_all_graph_attrs(file_path=file_path)
-	gexf_to_dot(file_path)
