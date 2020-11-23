@@ -13,6 +13,8 @@ import time
 import sys
 import datetime
 
+
+# TODO: change this to have all running functionality in this file with if file exists statements to save time. 
 def run_experiment(num_agents, num_epi, centrality=None):
 	# Generate primitive options
 	options = generate_primitive_options()

@@ -6,9 +6,8 @@ import re
 import json
 import pickle
 
-graph_path = "./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"
 
-def extract_subgoals(path=graph_path, centrality="betweenness", n_subgoals=5, file_path="./centrality_experiments/subgoals/"):
+def extract_subgoals(path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf", centrality="betweenness", n_subgoals=5, file_path="./centrality_experiments/subgoals/"):
     
     out_path = file_path + centrality + ".txt"
 
@@ -98,3 +97,9 @@ def string_to_list(string):
     return state
 
 
+if __name__=='__main__':
+    # Run subgoal extraction for each centrality from graph
+    graph_path = "./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"
+    centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]
+    for c in centralities:
+        extract_subgoals(graph_path, centrality=c)

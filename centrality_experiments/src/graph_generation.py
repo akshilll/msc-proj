@@ -116,3 +116,11 @@ def gexf_to_dot(path_in="./centrality_experiments/graphs/heart_peg_solitaire_gra
 
 	write_dot(graph, path_out)
 
+
+
+if __name__=="__main__":
+	# Generate graph
+	file_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
+	write_graph(file_path=file_path)
+	add_all_graph_attrs(file_path=file_path)
+	gexf_to_dot(file_path)
