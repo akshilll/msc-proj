@@ -124,23 +124,27 @@ def extract_win_subgraph(graph_path, out_path):
 if __name__=="__main__":
 	
 	# Generate graph
-	# graph_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
-	# start_state = [1] * 16
-	# start_state[9] = 0
-	# init_state = heart_peg_state(state = start_state)	
+	graph_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
+	out_path = "./centrality_experiments/graphs/hps_win.gexf"
+	start_state = [1] * 16
+	start_state[9] = 0
+	init_state = heart_peg_state(state = start_state)	
 
-	graph_dir = "./centrality_experiments/graphs/"
-	layout_dir =  "./centrality_experiments/environments/rooms_layouts/"
+	# graph_dir = "./centrality_experiments/graphs/"
+	# layout_dir =  "./centrality_experiments/environments/rooms_layouts/"
 
-	room_envs = ["two_rooms", "four_rooms", "six_rooms"]
+	# room_envs = ["two_rooms", "four_rooms", "six_rooms"]
 
-	for env in room_envs:
-		graph_path = graph_dir + env + ".gexf" 
-		layout_path = layout_dir + env + ".txt"
-		init_state = rooms_state(layout_path, (2, 2))
+	# for env in room_envs:
+	# 	graph_path = graph_dir + env + ".gexf" 
+	# 	layout_path = layout_dir + env + ".txt"
+	# 	init_state = rooms_state(layout_path, (2, 2))
 	
-		interaction_graph = generate_interaction_graph(initial_states = [init_state])
+	interaction_graph = generate_interaction_graph(initial_states = [init_state])
 
-		nx.write_gexf(interaction_graph, graph_path)
+	nx.write_gexf(interaction_graph, graph_path)
 
-		add_all_graph_attrs(graph_path=graph_path)
+	add_all_graph_attrs(graph_path=graph_path)
+
+	extract_win_subgraph(graph_path, out_path)
+
