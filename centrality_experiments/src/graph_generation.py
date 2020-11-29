@@ -2,9 +2,12 @@ import numpy as np
 from copy import deepcopy
 import networkx as nx 
 from centrality_experiments.environments.heart_peg_solitaire import heart_peg_env, heart_peg_state
+from centrality_experiments.environments.rooms import rooms_state, rooms_environment
 from typing import List
 from barl_simpleoptions.state import State
 from networkx.drawing.nx_pydot import write_dot
+import functools
+import operator
 
 
 # Josh's code, slightly optimised by me found https://github.com/Ueva/BaRL-SimpleOptions/blob/master/barl_simpleoptions/state.py
@@ -51,26 +54,9 @@ def generate_interaction_graph(initial_states : List['State']) :
 	
 	return interaction_graph
 
-		
-def write_graph(file_path):
-	""" Wrapper function of generate_interaction_graph
-        Outputs interaction graph of heart_peg_solitaire to file
-
-        Arguments:
-            file_path -- String containing file path to output file where graph is written
-    
-    """
-	start_state = [1] * 16
-	start_state[9] = 0
-	init_state = heart_peg_state(state = start_state)	
-
-	interaction_graph = generate_interaction_graph(initial_states = [init_state])
-	
-	
-	nx.write_gexf(interaction_graph, file_path)
-
-def add_centrality_attr(centrality, file_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
-	graph = nx.read_gexf(file_path)
+# TODO: change this to have a dict of str:function for centrality metrics
+def add_centrality_attr(centrality, graph_path):
+	graph = nx.read_gexf(graph_path)
 	
 	assert type(centrality) == str
 
@@ -100,20 +86,61 @@ def add_centrality_attr(centrality, file_path="./centrality_experiments/graphs/h
 
 	nx.set_node_attributes(graph, metric_values, centrality)
 	
-	nx.write_gexf(graph, file_path)
+	nx.write_gexf(graph, graph_path)
 	
 	return True
 
-def add_all_graph_attrs(file_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
+def add_all_graph_attrs(graph_path):
 	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
 	
 	for c in centralities:
-		add_centrality_attr(c, file_path)
+		add_centrality_attr(c, graph_path)
 
+
+def extract_win_subgraph(graph_path, out_path):
+	g = nx.read_gexf(graph_path)
+	winning_nodes = np.eye(16, dtype=int).tolist()
+	winning_nodes = [str(i) for i in winning_nodes if str(i) in g]
+	init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
+	
+	subgraph_nodes = [[init_node]]
+
+	for w_node in winning_nodes:
+		tmp = nx.all_simple_paths(g, source=init_node, target=w_node)
+		subgraph_nodes = subgraph_nodes + list(tmp)
+
+	sg_nodes_unique = np.unique(functools.reduce(operator.iconcat, subgraph_nodes, []))
+
+	subgraph = g.subgraph(sg_nodes_unique)
+
+	nx.write_gexf(subgraph, out_path)
+
+
+
+
+	
 
 
 if __name__=="__main__":
+	
 	# Generate graph
-	file_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
-	write_graph(file_path=file_path)
-	add_all_graph_attrs(file_path=file_path)
+	# graph_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
+	# start_state = [1] * 16
+	# start_state[9] = 0
+	# init_state = heart_peg_state(state = start_state)	
+
+	graph_dir = "./centrality_experiments/graphs/"
+	layout_dir =  "./centrality_experiments/environments/rooms_layouts/"
+
+	room_envs = ["two_rooms", "four_rooms", "six_rooms"]
+
+	for env in room_envs:
+		graph_path = graph_dir + env + ".gexf" 
+		layout_path = layout_dir + env + ".txt"
+		init_state = rooms_state(layout_path, (2, 2))
+	
+		interaction_graph = generate_interaction_graph(initial_states = [init_state])
+
+		nx.write_gexf(interaction_graph, graph_path)
+
+		add_all_graph_attrs(graph_path=graph_path)

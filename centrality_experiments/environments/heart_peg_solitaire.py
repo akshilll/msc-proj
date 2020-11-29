@@ -10,8 +10,7 @@ from barl_simpleoptions.environment import Environment, BaseEnvironment
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from typing import List, Tuple
-
-
+import re
 
 class heart_peg_state(State):
 	'''State implementation for peg solitaire on a heart shaped board 
@@ -56,11 +55,12 @@ class heart_peg_state(State):
 			bool -- True iff other_state is equal to state of reflection
 		'''
 		# toggle between these lines to account for symmetry or not!
-		# return hash(str(self.state)) == hash(str(other_state.state)) # Symmetry not accounted for
-		return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
+		# return (hash(str(self.state)) == hash(str(other_state.state))) or (hash(str(self.symm_state)) == hash(str(other_state.state)))
+		return hash(str(self.state)) == hash(str(other_state.state)) # Symmetry not accounted for
 	
+	# For symmetry change this to be max([hash(str(state.state), hash(str(symm_state.state)))])
 	def __hash__(self):
-		return hash(str(self))
+		return hash(str(self.state))
 
 	def symmetry_state(self):
 		'''Reflects state in vertical axis
@@ -278,7 +278,7 @@ class heart_peg_state(State):
 		for a in self.get_available_actions():
 			if next_state.state == self.take_action(a)[0].state:
 				return a
-		return (-2, (-2, -2))
+		return [(-2, (-2, -2))]
 
 
 
@@ -371,3 +371,24 @@ class heart_peg_env(BaseEnvironment):
 	# 	available_options = [option for option in self.options if option.initiation(self.current_state)]
 	# 	return available_options
 
+def string_to_hps(string):
+    """ Converts string from node in graph to state
+
+    Arguments:
+    string -- String containing node state
+
+    Returns:
+    hps -- State object corresponding to string
+    """
+    # Format the string to remove everything but the numbers
+    new_string = re.sub("[\[\], ]+", "", string)
+    
+    # Convert to list of integers
+    state = [int(i) for i in new_string]
+    
+    # Construct state
+    hps = heart_peg_state(state=state)
+
+    assert hps.is_state_legal(),  str(hps)
+
+    return state

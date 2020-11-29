@@ -7,9 +7,9 @@ import json
 import pickle
 
 
-def extract_subgoals(path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf", centrality="betweenness", n_subgoals=5, file_path="./centrality_experiments/subgoals/"):
+def extract_subgoals(path, out_dir, centrality="betweenness", n_subgoals=5):
     
-    out_path = file_path + centrality + ".txt"
+    out_path = out_dir + "/subgoals/" +  centrality + ".txt"
 
     # Read in graph
     graph = nx.read_gexf(graph_path)
@@ -74,32 +74,11 @@ def extract_subgoals(path="./centrality_experiments/graphs/heart_peg_solitaire_g
     
     return subgoals
 
-def string_to_list(string):
-    """ Converts string from node in graph to state
-
-    Arguments:
-    string -- String containing node state
-
-    Returns:
-    hps -- State object corresponding to string
-    """
-    # Format the string to remove everything but the numbers
-    new_string = re.sub("[\[\], ]+", "", string)
-    
-    # Convert to list of integers
-    state = [int(i) for i in new_string]
-    
-    # Construct state
-    hps = heart_peg_state(state=state)
-
-    assert hps.is_state_legal(),  str(hps)
-
-    return state
-
 
 if __name__=='__main__':
     # Run subgoal extraction for each centrality from graph
-    graph_path = "./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"
+    graph_path = "./centrality_experiments/graphs/two_rooms.gexf"
+    out_dir = "./centrality_experiments/"
     centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]
     for c in centralities:
-        extract_subgoals(graph_path, centrality=c)
+        extract_subgoals(graph_path, out_dir, centrality=c)

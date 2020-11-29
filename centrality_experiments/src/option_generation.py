@@ -1,7 +1,7 @@
 import numpy as np
 from barl_simpleoptions.option import PrimitiveOption, SubgoalOption
-from centrality_experiments.environments.heart_peg_solitaire import heart_peg_state
-from centrality_experiments.src.subgoal_extraction import string_to_list
+from centrality_experiments.environments.heart_peg_solitaire import heart_peg_state, string_to_hps
+
 
 import networkx as nx
 import functools
@@ -18,6 +18,7 @@ class sg_option(SubgoalOption):
         self.subgoal = subgoal
         self.initiation_set_size = initiation_set_size
         self._build_initiation_set()
+        
 
         # Modification by Akshil  
         if policy_file_path is not None:
@@ -32,7 +33,7 @@ class sg_option(SubgoalOption):
             # Generate policy
             self.policy_dict = self.generate_policy_dict()
             # Write it to a file for later
-            with open("./centrality_experiments/subgoals/policies/{}_policy.format".format(str(subgoal)), "wb") as f:
+            with open("./centrality_experiments/subgoals/policies/{}_policy.format".format(str(subgoal)), "wb") as f: #TODO make path a variable
                 pickle.dump(self.policy_dict, f)
 
     # Slightly modified version of Josh's code in github.com/Ueva/Betweenness-Project/Code/Simple%20Numpile%20Experiments/options.py
@@ -57,7 +58,7 @@ class sg_option(SubgoalOption):
                 if (nx.has_path(self.graph, state_string, subgoal_string)) :
                 
                     # Make state from string
-                    state = heart_peg_state(string_to_list(state_string))
+                    state = heart_peg_state(string_to_hps(state_string)) #TODO: Generalise
 
                     # Get the shortest path to that node. 
                     shortest_path = nx.shortest_path(self.graph, state_string, subgoal_string)
@@ -71,7 +72,7 @@ class sg_option(SubgoalOption):
                             next_state = successor
                             break
 
-                action = state.get_transition_action(next_state)
+                action = state.get_transition_action(next_state) # TODO: Change to work for when environment is stochastic
                 policy_dict[state_string] = action
         return policy_dict
     
@@ -79,7 +80,7 @@ class sg_option(SubgoalOption):
         return "SubgoalOption({})".format(str(self.subgoal))
             
 
-def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
+def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph_without_symm.gexf"):
     """Gets all possible actions from a graph and generates list of PrimitiveOptions
 
     Arguments:
@@ -92,7 +93,7 @@ def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart
     graph = nx.read_gexf(graph_path)
     
     # Build list of lists of available_actions for each state in graph
-    primitive_actions = [heart_peg_state(string_to_list(node)).get_available_actions() for node in nx.nodes(graph)]
+    primitive_actions = [heart_peg_state(string_to_hps(node)).get_available_actions() for node in nx.nodes(graph)]
     
     # Reduce the list to 1d 
     primitive_actions = list(set(functools.reduce(operator.iconcat, primitive_actions, [])))
@@ -102,7 +103,7 @@ def generate_primitive_options(graph_path="./centrality_experiments/graphs/heart
 
     return primitive_options
 
-def generate_subgoal_options(centrality, graph_path="./centrality_experiments/graphs/heart_peg_solitaire_graph.gexf"):
+def generate_subgoal_options(centrality, graph_path):
     print("Generating subgoals for {}".format(centrality))
 
     if centrality not in ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]:
@@ -123,7 +124,7 @@ def generate_subgoal_options(centrality, graph_path="./centrality_experiments/gr
 
     # Generate subgoals and symmetry subgoals and pickle them
     for s in subgoal_strings:
-        state = string_to_list(s)
+        state = string_to_hps(s)
         print(state)
         sg_state = heart_peg_state(state=state)
         symm_state = sg_state.symm_state
@@ -133,14 +134,17 @@ def generate_subgoal_options(centrality, graph_path="./centrality_experiments/gr
         if sg_state.is_initial_state():
             print(centrality, "INITIAL STATE FOUND AS SUBGOAL")
             continue
+        
+        sg_policy_path = "./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_state))
+        sg_symm_policy_path = "./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_symm_state))
 
-        if os.path.exists("./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_state))):
-            policy_fp = "./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_state))
+        if os.path.exists(sg_policy_path):
+            policy_fp = sg_policy_path
         else: 
             policy_fp = None
         
-        if os.path.exists("./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_symm_state))):
-            policy_fp_symm = "./centrality_experiments/subgoals/policies/{}.pickle".format(str(sg_symm_state))
+        if os.path.exists(sg_symm_policy_path):
+            policy_fp_symm = sg_symm_policy_path
         else: 
             policy_fp_symm = None
 
@@ -154,9 +158,9 @@ def generate_subgoal_options(centrality, graph_path="./centrality_experiments/gr
 
 if __name__ == "__main__":
     centralities = ["betweenness", "degree", "katz", "load", "pagerank", "eigenvector", "closeness"] 
-
+    graph_path = "./centrality_experiments/graphs/heart_peg_solitaire_graph_without_symm.gexf"
     # Run option generation for each centrality
     for c in centralities:
-        sg = generate_subgoal_options(c)
+        sg = generate_subgoal_options(c, graph_path)
         if len(sg) > 0: print(sg[0].policy_dict)
         print(c, "done, with {} subgoals".format(len(sg)))

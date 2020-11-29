@@ -1,4 +1,4 @@
-from centrality_experiments.heart_peg_solitaire import heart_peg_state, heart_peg_env
+from centrality_experiments.environments.heart_peg_solitaire import heart_peg_state, heart_peg_env
 import pytest
 import numpy as np
 
@@ -65,21 +65,13 @@ def test_eq():
     end_state = [0] * 16
     end_state[9] = 1
     s5 = heart_peg_state(state=end_state)
-
-    s_symm = heart_peg_state(state=s.symm_state)
-    s2_symm = heart_peg_state(state=s2.symm_state)
-    s3_symm = heart_peg_state(state=s3.symm_state)
-
+    
     # Testing
     assert (s != s2)
     assert (s != s3)
     assert (s == heart_peg_state(state = s.state))
     assert (s5 != s4)
 
-    # Symmetry
-    assert (s == s_symm)
-    assert (s2 == s2_symm)
-    assert (s3 == s3_symm)
 
 def test_symmetry_state():
     # Set the seed
