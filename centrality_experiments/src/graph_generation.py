@@ -84,6 +84,9 @@ def add_centrality_attr(centrality, graph_path):
 	elif centrality == "out_degree":
 		metric_values = nx.algorithms.centrality.out_degree_centrality(graph)
 
+	elif centrality == "local_reaching":
+		metric_values = nx.algorithms.centrality.reaching.
+
 	nx.set_node_attributes(graph, metric_values, centrality)
 	
 	nx.write_gexf(graph, graph_path)
@@ -91,7 +94,7 @@ def add_centrality_attr(centrality, graph_path):
 	return True
 
 def add_all_graph_attrs(graph_path):
-	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
+	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree", "	"]
 	
 	for c in centralities:
 		add_centrality_attr(c, graph_path)
