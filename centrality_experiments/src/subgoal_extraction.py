@@ -77,7 +77,7 @@ def extract_subgoals(path, out_dir, centrality="betweenness", n_subgoals=5):
 
 if __name__=='__main__':
     # Run subgoal extraction for each centrality from graph
-    graph_path = "./centrality_experiments/graphs/two_rooms.gexf"
+    graph_path = "./centrality_experiments/graphs/heart_peg_solitaire_without_.gexf"
     out_dir = "./centrality_experiments/"
     centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank"]
     for c in centralities:

@@ -55,8 +55,8 @@ def generate_interaction_graph(initial_states : List['State']) :
 	return interaction_graph
 
 # TODO: change this to have a dict of str:function for centrality metrics
-def add_centrality_attr(centrality, graph_path):
-	graph = nx.read_gexf(graph_path)
+def add_centrality_attr(centrality, graph, win_only):
+	
 	
 	assert type(centrality) == str
 
@@ -84,20 +84,41 @@ def add_centrality_attr(centrality, graph_path):
 	elif centrality == "out_degree":
 		metric_values = nx.algorithms.centrality.out_degree_centrality(graph)
 
-	elif centrality == "local_reaching":
-		metric_values = nx.algorithms.centrality.reaching.
+	
+	if win_only:
+		winning_nodes = np.eye(16, dtype=int).tolist()
+		winning_nodes = [str(i) for i in winning_nodes if str(i) in graph]
+		init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
+		subgraph_nodes = [[init_node]]
+
+		for w_node in winning_nodes:
+			tmp = nx.all_simple_paths(graph, source=init_node, target=w_node)
+			subgraph_nodes = subgraph_nodes + list(tmp)
+
+		sg_nodes_unique = np.unique(functools.reduce(operator.iconcat, subgraph_nodes, []))
+
+		call_count = 0
+		metric_values = deepcopy(metric_values)
+		for n in graph.nodes:
+			if n not in sg_nodes_unique:
+				call_count += 1
+				metric_values[n] = 0.
 
 	nx.set_node_attributes(graph, metric_values, centrality)
 	
-	nx.write_gexf(graph, graph_path)
+	return graph
+
+def add_all_graph_attrs(graph_path, out_path, win_only):
+	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
+	graph = nx.read_gexf(graph_path)
+
+	for c in centralities:
+		graph = add_centrality_attr(c, graph, win_only)
+	
+	nx.write_gexf(graph, out_path)
 	
 	return True
 
-def add_all_graph_attrs(graph_path):
-	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree", "	"]
-	
-	for c in centralities:
-		add_centrality_attr(c, graph_path)
 
 
 def extract_win_subgraph(graph_path, out_path):
@@ -120,10 +141,6 @@ def extract_win_subgraph(graph_path, out_path):
 
 
 
-
-	
-
-
 if __name__=="__main__":
 	
 	# Generate graph
@@ -143,11 +160,9 @@ if __name__=="__main__":
 	# 	layout_path = layout_dir + env + ".txt"
 	# 	init_state = rooms_state(layout_path, (2, 2))
 	
-	interaction_graph = generate_interaction_graph(initial_states = [init_state])
+	# interaction_graph = generate_interaction_graph(initial_states = [init_state])
 
-	nx.write_gexf(interaction_graph, graph_path)
+	# nx.write_gexf(interaction_graph, graph_path)
 
-	add_all_graph_attrs(graph_path=graph_path)
-
-	extract_win_subgraph(graph_path, out_path)
+	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=True)
 
