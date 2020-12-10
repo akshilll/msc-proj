@@ -112,7 +112,7 @@ class heart_peg_state(State):
 
 		# The board can only contain 1s and 0s 
 		state_unique = set(self.state)
-		if state_unique not in [set([1]), set([0]), set([0, 1])]:
+		if state_unique != set([0, 1]):
 			return False
 
 		# If it's made it this far then it's legal!
@@ -275,10 +275,8 @@ class heart_peg_state(State):
         Returns:
             List[actions] -- List of actions 
         """
-		for a in self.get_available_actions():
-			if next_state.state == self.take_action(a)[0].state:
-				return a
-		return [(-2, (-2, -2))]
+		out = [a for a in self.get_available_actions() if next_state in self.take_action(a)]
+		return out
 
 
 
