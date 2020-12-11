@@ -1,13 +1,20 @@
 import numpy as np
 from copy import deepcopy
-import networkx as nx 
-from centrality_experiments.environments.heart_peg_solitaire import heart_peg_env, heart_peg_state
-from centrality_experiments.environments.rooms import rooms_state, rooms_environment
-from typing import List
-from barl_simpleoptions.state import State
-from networkx.drawing.nx_pydot import write_dot
 import functools
 import operator
+
+import networkx as nx 
+from networkx.algorithms.centrality import *
+from networkx.algorithms.link_analysis.pagerank_alg import pagerank
+from networkx.drawing.nx_pydot import write_dot
+
+from centrality_experiments.environments.heart_peg_solitaire import heart_peg_env, heart_peg_state
+from centrality_experiments.environments.rooms import rooms_state, rooms_environment
+from centrality_experiments.environments.peg_solitaire import peg_solitaire_env, peg_solitaire_state
+
+from typing import List
+from barl_simpleoptions.state import State
+
 
 
 # Josh's code, slightly optimised by me found https://github.com/Ueva/BaRL-SimpleOptions/blob/master/barl_simpleoptions/state.py
@@ -55,89 +62,68 @@ def generate_interaction_graph(initial_states : List['State']) :
 	return interaction_graph
 
 # TODO: change this to have a dict of str:function for centrality metrics
-def add_centrality_attr(centrality, graph, win_only):
-	
+def add_centrality_attr(centrality, graph, win_only, winning_nodes=None, init_node=None):
+	centrality_fns = {
+				"betweenness": betweenness_centrality,
+				"closeness": closeness_centrality,
+				"out_degree": out_degree_centrality,
+				"load": load_centrality,
+				"pagerank": pagerank
+				}
 	
 	assert type(centrality) == str
-
-	if centrality == "betweenness":
-		metric_values = nx.algorithms.centrality.betweenness_centrality(graph)
-    
-	elif centrality == "closeness":
-		metric_values = nx.algorithms.centrality.closeness_centrality(graph.reverse())
-
-	elif centrality == "degree":
-		metric_values = nx.algorithms.centrality.degree_centrality(graph)
-
-	elif centrality == "eigenvector":
-		metric_values = nx.algorithms.centrality.eigenvector_centrality(graph.reverse(), max_iter=10000)
-
-	elif centrality == "katz":
-		metric_values = nx.algorithms.centrality.katz_centrality(graph.reverse(), max_iter=10000)
-
-	elif centrality == "load":
-		metric_values = nx.algorithms.centrality.load_centrality(graph)
-
-	elif centrality == "pagerank":
-		metric_values = nx.algorithms.link_analysis.pagerank_alg.pagerank(graph)
 	
-	elif centrality == "out_degree":
-		metric_values = nx.algorithms.centrality.out_degree_centrality(graph)
 
-	
-	if win_only:
-		winning_nodes = np.eye(16, dtype=int).tolist()
-		winning_nodes = [str(i) for i in winning_nodes if str(i) in graph]
-		init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
+	if not win_only:
+		if centrality == "eigenvector":
+			metric_values = eigenvector_centrality(graph.reverse(), max_iter=10000)
+		elif centrality == "katz":
+			metric_values = katz_centrality(graph.reverse(), max_iter=10000)
+		else:
+			centrality_fn = centrality_fns[centrality]
+			metric_values = centrality_fn(graph)
+
+	else:
+		# Get all shortest paths from init state to goal states
+		# For every node on that path, calculate centrality for that node using the subgraph of winning shortest path
+		# All other nodes have a value of 0
+		
 		subgraph_nodes = [[init_node]]
 
 		for w_node in winning_nodes:
-			tmp = nx.all_simple_paths(graph, source=init_node, target=w_node)
+			tmp = nx.all_shortest_paths(graph, source=init_node, target=w_node) # shortest or simple?
 			subgraph_nodes = subgraph_nodes + list(tmp)
 
-		sg_nodes_unique = np.unique(functools.reduce(operator.iconcat, subgraph_nodes, []))
-
-		call_count = 0
-		metric_values = deepcopy(metric_values)
-		for n in graph.nodes:
-			if n not in sg_nodes_unique:
-				call_count += 1
-				metric_values[n] = 0.
+		subgraph_nodes_unique = np.unique(functools.reduce(operator.iconcat, subgraph_nodes, []))
+		subgraph = graph.subgraph(subgraph_nodes_unique)
+		
+		if centrality == "eigenvector":
+			subgraph_metric_values = eigenvector_centrality(subgraph.reverse(), max_iter=10000)
+		elif centrality == "katz":
+			subgraph_metric_values = katz_centrality(subgraph.reverse(), max_iter=10000)
+		else:
+			centrality_fn = centrality_fns[centrality]
+			subgraph_metric_values = centrality_fn(subgraph)
+		
+		
+		metric_values = {node: 0. for node in graph.nodes}
+		for n in subgraph_nodes_unique:
+			metric_values[n] = subgraph_metric_values[n]
 
 	nx.set_node_attributes(graph, metric_values, centrality)
 	
 	return graph
 
-def add_all_graph_attrs(graph_path, out_path, win_only):
-	centralities = ["betweenness", "closeness", "degree", "eigenvector", "katz", "load", "pagerank", "out_degree"]
+def add_all_graph_attrs(graph_path, out_path, win_only, winning_nodes, init_node):
+	centralities = ["betweenness", "closeness", "eigenvector", "katz", "load", "pagerank", "out_degree"]
 	graph = nx.read_gexf(graph_path)
 
 	for c in centralities:
-		graph = add_centrality_attr(c, graph, win_only)
+		graph = add_centrality_attr(c, graph, win_only, winning_nodes, init_node)
 	
 	nx.write_gexf(graph, out_path)
 	
 	return True
-
-
-
-def extract_win_subgraph(graph_path, out_path):
-	g = nx.read_gexf(graph_path)
-	winning_nodes = np.eye(16, dtype=int).tolist()
-	winning_nodes = [str(i) for i in winning_nodes if str(i) in g]
-	init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
-	
-	subgraph_nodes = [[init_node]]
-
-	for w_node in winning_nodes:
-		tmp = nx.all_simple_paths(g, source=init_node, target=w_node)
-		subgraph_nodes = subgraph_nodes + list(tmp)
-
-	sg_nodes_unique = np.unique(functools.reduce(operator.iconcat, subgraph_nodes, []))
-
-	subgraph = g.subgraph(sg_nodes_unique)
-
-	nx.write_gexf(subgraph, out_path)
 
 
 
@@ -160,9 +146,13 @@ if __name__=="__main__":
 	# 	layout_path = layout_dir + env + ".txt"
 	# 	init_state = rooms_state(layout_path, (2, 2))
 	
-	# interaction_graph = generate_interaction_graph(initial_states = [init_state])
+	interaction_graph = generate_interaction_graph(initial_states = [init_state])
 
-	# nx.write_gexf(interaction_graph, graph_path)
+	nx.write_gexf(interaction_graph, graph_path)
+	
+	winning_nodes = np.eye(16, dtype=int).tolist()
 
-	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=True)
+	winning_nodes = [str(i) for i in winning_nodes if str(i) in interaction_graph]
+	init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
+	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=True, winning_nodes=winning_nodes, init_node=init_node)
 

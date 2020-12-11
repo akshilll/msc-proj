@@ -83,17 +83,35 @@ class peg_solitaire_state(State):
     def take_action(self, action) -> List['State']:
         
         # Check action is legal
-		if not self.is_action_legal(action):
-			raise Exception('Action is not legal')
+        if not self.is_action_legal(action):
+            raise Exception('Action is not legal')
 
         (gap_coord, direction_from) = action 
 
         gap_x, gap_y = gap_coord
         direction_x, direction_y = direction_from
 
-        new_state = deepcopy(self.state)
         gap_coords = deepcopy(self.gap_coords)
-        pass
+        
+        peg_mid_coord = gap_x + direction_x, gap_y + direction_y
+        peg_end_coord = gap_x + 2*direction_x, gap_y + 2*direction_y
+
+        # Delete former gap_coord from list
+        # Add new gap_coords to list
+        # Generate state 
+        gap_coords = deepcopy(self.gap_coords)
+        gap_coords.remove(gap_coords)
+        gap_coords = gap_coords + [peg_mid_coord, peg_end_coord]
+
+        layout_path = self.layout_path
+
+        new_state = peg_solitaire_state(layout_path, gap_coords)
+
+        return [new_state]
+
+
+
+
 
     def is_terminal_state(self) -> bool:
         if len(self.get_available_actions()) == 0:
@@ -103,15 +121,15 @@ class peg_solitaire_state(State):
     
     def get_successors(self) -> List['State']:
         # Iterate over each action
-		available_actions = self.get_available_actions()
+        available_actions = self.get_available_actions()
 		
 		# Get list of lists of successor states for each action
-		out = [self.take_action(a) for a in available_actions] 
+        out = [self.take_action(a) for a in available_actions] 
 		
 		# Flatten list to 1d 
-		out = functools.reduce(operator.iconcat, out, [])
-
-		return out
+        out = functools.reduce(operator.iconcat, out, [])
+        
+        return out
 
     def get_transition_action(self, next_state : 'State') -> List:
         out = [a for a in self.get_available_actions() if next_state in self.take_action(a)]
@@ -131,7 +149,7 @@ class peg_solitaire_state(State):
             return False
         
         if 0 not in self.state:
-            return False:
+            return False
         
         if 1 not in self.state:
             return False
@@ -153,10 +171,7 @@ class peg_solitaire_state(State):
         if direction_from not in self.action_space:
             return False
 
-        if gap_x >= self.state.shape[0] or gap_y >= self.state.shape[1]:
-            return False
-
-        if self.state[gap_x, gap_y] != 0:
+        if gap_coord not in self.gap_coords:
             return False
         
         peg_mid_x, peg_mid_y = gap_x + direction_x, gap_y + direction_y
