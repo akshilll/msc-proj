@@ -199,10 +199,6 @@ class rooms_environment(BaseEnvironment):
         else:
             self.current_state.render()
 
-    def _process_layout(self, layout_path):
-        return grid, goal_pos, initial_agent_pos, terminal_states
-
-
 
 
 
