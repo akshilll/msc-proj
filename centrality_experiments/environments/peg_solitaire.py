@@ -25,8 +25,8 @@ class peg_solitaire_state(State):
         # Keep a dict to translate the txt document into a numpy array
         self.layout_key = {'#': -1, '0': 0, '1': 1} 
 
-        # Constant action space 
-        self.action_space = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        # Constant action space (y, x) values in accordance with numpy indexing
+        self.board_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         
         # Generate a template array of the board and init state for future use
         self.grid, self.initial_state = self._process_layout(layout_path, self.layout_key)    
@@ -114,20 +114,19 @@ class peg_solitaire_state(State):
             numpy array: State array with -1s denoting invalid spots, 0s denoting empty valid spots and 1s denoting filled spots on the board
         """
         state = deepcopy(self.grid)
-        
-        for x, y in gap_coords:
-            state[x, y] = 0
+
+        for (y, x) in gap_coords:
+            state[y, x] = 0
 
         return state
 
-    # TODO: Use filter instead of list comp
     def get_available_actions(self):
         """Wrapper function which returns legal actions from action space
 
         Returns:
             List: Available actions in current state
         """
-        available_actions = [a for a in self.action_space if self.is_action_legal(a)]
+        available_actions = list(filter(self.is_action_legal, product(self.gap_coords, self.board_directions)))
         return available_actions
 
     def take_action(self, action) -> List['State']:
@@ -145,12 +144,12 @@ class peg_solitaire_state(State):
 
         (gap_coord, direction_from) = action 
 
-        gap_x, gap_y = gap_coord
-        direction_x, direction_y = direction_from
+        gap_y, gap_x = gap_coord
+        direction_y, direction_x = direction_from
         
         # Find new gap coordinates
-        peg_mid_coord = gap_x + direction_x, gap_y + direction_y
-        peg_end_coord = gap_x + 2*direction_x, gap_y + 2*direction_y
+        peg_mid_coord = gap_y + direction_y, gap_x + direction_x
+        peg_end_coord = gap_y + 2*direction_y, gap_x + 2*direction_x
 
         # Delete former gap_coord from list
         gap_coords = deepcopy(self.gap_coords)
@@ -236,15 +235,15 @@ class peg_solitaire_state(State):
         Returns:
             bool: True iff the action is legal. 
         """
-        (gap_coord, direction_from) = action 
+        (gap_coord, direction_from) = action # (1, 2), (-1, 0)
 
-        gap_x, gap_y = gap_coord
-        direction_x, direction_y = direction_from
+        gap_y, gap_x = gap_coord
+        direction_y, direction_x = direction_from
 
-        state_shape_x, state_shape_y = self.state.shape
+        state_shape_y, state_shape_x = self.state.shape
 
         # Is the action in the action space?
-        if direction_from not in self.action_space:
+        if direction_from not in self.board_directions:
             return False
 
         # Is the initial gap present in the board?
@@ -252,14 +251,17 @@ class peg_solitaire_state(State):
             return False
         
         # Check old peg slots (new gap slots) are on the board
-        peg_mid_x, peg_mid_y = gap_x + direction_x, gap_y + direction_y
-        peg_end_x, peg_end_y = gap_x + 2*direction_x, gap_y + 2*direction_y
+        peg_mid_y, peg_mid_x = gap_y + direction_y, gap_x + direction_x
+        peg_end_y, peg_end_x = gap_y + 2*direction_y, gap_x + 2*direction_x
 
-        if peg_mid_x >= state_shape_x or peg_end_x >= state_shape_x or peg_mid_y >= state_shape_y or peg_end_y >= state_shape_y:
+        # Check all of the holes are on the board
+        if not (0 <= peg_mid_x < state_shape_x and 0 <= peg_end_x < state_shape_x and 0 <= peg_mid_y < state_shape_y and 0 <= peg_end_y < state_shape_y):
             return False
-        if self.state[peg_mid_x, peg_mid_y] != 1:
+        
+        # Check that there are two pegs in the adjacent holes
+        if self.state[peg_mid_y, peg_mid_x] != 1:
             return False
-        if self.state[peg_end_x, peg_end_y] != 1:
+        if self.state[peg_end_y, peg_end_x] != 1:
             return False
         
         # Must be legal at this point.

@@ -126,33 +126,45 @@ def add_all_graph_attrs(graph_path, out_path, win_only, winning_nodes, init_node
 	return True
 
 
+def generate_rooms_stg():
+	pass
+
 
 if __name__=="__main__":
 	
 	# Generate graph
-	graph_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
-	out_path = "./centrality_experiments/graphs/hps_win.gexf"
-	start_state = [1] * 16
-	start_state[9] = 0
-	init_state = heart_peg_state(state = start_state)	
-
-	# graph_dir = "./centrality_experiments/graphs/"
-	# layout_dir =  "./centrality_experiments/environments/rooms_layouts/"
-
-	# room_envs = ["two_rooms", "four_rooms", "six_rooms"]
-
-	# for env in room_envs:
-	# 	graph_path = graph_dir + env + ".gexf" 
-	# 	layout_path = layout_dir + env + ".txt"
-	# 	init_state = rooms_state(layout_path, (2, 2))
+	graph_path = "./centrality_experiments/graphs/four_square_solitaire.gexf"
+	out_path = "./centrality_experiments/graphs/four_square_win.gexf"
 	
-	interaction_graph = generate_interaction_graph(initial_states = [init_state])
+	layout_dir = './centrality_experiments/environments/peg_solitaire_layouts/'
+	layout1 = layout_dir + '4square.txt'
+	layout2 = layout_dir + 'heart.txt'
+
+    # Initial state
+	gap_coord_square = [(1, 2)]
+	gap_coord_heart = [(2, 2)]
+
+	four_square_init_state = peg_solitaire_state(layout1, gap_coord_square)
+	heart_init_state = peg_solitaire_state(layout2, gap_coord_heart)
+
+	print('Time to make the graph')
+	interaction_graph = generate_interaction_graph(initial_states = [four_square_init_state])
+	
+	print(len(interaction_graph))
 
 	nx.write_gexf(interaction_graph, graph_path)
 	
-	winning_nodes = np.eye(16, dtype=int).tolist()
+	four_square_winning_idc = [(i, j) for i in range(4) for j in range(4)]
+	four_square_winning_nodes = []
+	
+	for idx in four_square_winning_idc:
+		tmp = deepcopy(four_square_winning_idc)
+		tmp.remove(idx)
+		four_square_winning_nodes.append(tmp)
 
 	winning_nodes = [str(i) for i in winning_nodes if str(i) in interaction_graph]
-	init_node = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]'
-	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=True, winning_nodes=winning_nodes, init_node=init_node)
+	init_node = str(four_square_init_state)
+	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=False, winning_nodes=None, init_node=init_node)
 
+	
+	
