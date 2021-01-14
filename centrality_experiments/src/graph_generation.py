@@ -29,9 +29,11 @@ def generate_interaction_graph(initial_states : List['State']) :
 
 	# Add initial states to current successor list.
 	current_successor_states = deepcopy(initial_states)
-
+	i = 0
 	# While we have new successor states to process.
 	while (len(current_successor_states) != 0) :
+		i += 1
+		print(i)
 		# Add each current new successor to our list of processed states.
 		steps_tmp += 1
 		next_successor_states = []
@@ -133,38 +135,51 @@ def generate_rooms_stg():
 if __name__=="__main__":
 	
 	# Generate graph
-	graph_path = "./centrality_experiments/graphs/four_square_solitaire.gexf"
-	out_path = "./centrality_experiments/graphs/four_square_win.gexf"
+	graph_path = "./centrality_experiments/graphs/five_square_solitaire.gexf"
+	out_path = "./centrality_experiments/graphs/five_square_solitaire_win.gexf"
 	
 	layout_dir = './centrality_experiments/environments/peg_solitaire_layouts/'
 	layout1 = layout_dir + '4square.txt'
 	layout2 = layout_dir + 'heart.txt'
+	layout3 = layout_dir + '5square.txt'
+	layout4 = layout_dir + 'cross_1111.txt'
 
     # Initial state
-	gap_coord_square = [(1, 2)]
+	gap_coord_4square = [(1, 2)]
 	gap_coord_heart = [(2, 2)]
+	gap_coord_5square = [(1, 2)]
+	gap_coord_cross1111 = [(2, 2)]
 
-	four_square_init_state = peg_solitaire_state(layout1, gap_coord_square)
+	four_square_init_state = peg_solitaire_state(layout1, gap_coord_4square)
+	five_square_init_state = peg_solitaire_state(layout3, gap_coord_5square)
 	heart_init_state = peg_solitaire_state(layout2, gap_coord_heart)
+	cross1111_init_state = peg_solitaire_state(layout4, gap_coord_cross1111)
+
+
+	# Generate graph
+	# graph_path = "./centrality_experiments/graphs/heart_peg_solitaire.gexf"
+	# out_path = "./centrality_experiments/graphs/hps_win.gexf"
+	# start_state = [1] * 16
+	# start_state[9] = 0
+	# init_state = heart_peg_state(state = start_state)	
+
 
 	print('Time to make the graph')
-	interaction_graph = generate_interaction_graph(initial_states = [four_square_init_state])
+	interaction_graph = generate_interaction_graph(initial_states = [cross1111_init_state])
 	
-	print(len(interaction_graph))
-
 	nx.write_gexf(interaction_graph, graph_path)
 	
-	four_square_winning_idc = [(i, j) for i in range(4) for j in range(4)]
-	four_square_winning_nodes = []
+	# four_square_winning_idc = [(i, j) for i in range(4) for j in range(4)]
+	# four_square_winning_nodes = []
 	
-	for idx in four_square_winning_idc:
-		tmp = deepcopy(four_square_winning_idc)
-		tmp.remove(idx)
-		four_square_winning_nodes.append(tmp)
+	# for idx in four_square_winning_idc:
+	# 	tmp = deepcopy(four_square_winning_idc)
+	# 	tmp.remove(idx)
+	# 	four_square_winning_nodes.append(tmp)
 
-	winning_nodes = [str(i) for i in winning_nodes if str(i) in interaction_graph]
-	init_node = str(four_square_init_state)
-	add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=False, winning_nodes=None, init_node=init_node)
+	# winning_nodes = [str(i) for i in winning_nodes if str(i) in interaction_graph]
+	# init_node = str(heart_init_state)
+	# add_all_graph_attrs(graph_path=graph_path, out_path=out_path, win_only=False, winning_nodes=None, init_node=init_node)
 
 	
 	

@@ -5,7 +5,6 @@ import numpy as np
 #### TESTING STATE ####
 
 def test_state_init():
-    
     layout_dir = './centrality_experiments/environments/peg_solitaire_layouts/'
     layout1 = layout_dir + '4square.txt'
     layout2 = layout_dir + 'heart.txt'
@@ -36,10 +35,11 @@ def test_state_init():
 
     assert state1.board_directions == [(-1, 0), (1, 0), (0, -1), (0, 1)]
     assert state2.gap_coords == [(0, 2), (1, 2), (3, 2)]
-    assert np.all(state3.state == np.array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], dtype=int).reshape((4, 4)))
-    assert np.all(state4.grid == np.array([[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]))
+    assert state3.state == [[0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
+    assert state4.grid == [[1] * 4] * 4
     assert state5.layout_path == layout2
-    assert state6.initial_state[0, 0] == -1
+    assert state6.initial_state[0][0] == -1
+    assert state6.state[1] == [1, 0, 0, 0, 0]
 
 
 def test_str():
@@ -53,8 +53,8 @@ def test_str():
     state1 = peg_solitaire_state(layout1, gap_coord1)
     state2 = peg_solitaire_state(layout1, gap_coord2)
 
-    assert str(state1) == '[[1 1 1 1]\n [1 1 0 1]\n [1 1 1 1]\n [1 1 1 1]]'
-    assert str(state2) == '[[1 1 0 1]\n [1 1 0 1]\n [1 1 1 1]\n [1 1 0 1]]'
+    assert str(state1) == '[[1, 1, 1, 1], [1, 1, 0, 1], [1, 1, 1, 1], [1, 1, 1, 1]]'
+    assert str(state2) == '[[1, 1, 0, 1], [1, 1, 0, 1], [1, 1, 1, 1], [1, 1, 0, 1]]'
 
     
 def test_eq():
@@ -235,7 +235,7 @@ def test_get_successors():
     assert successors1[0].gap_coords == [(2, 2), (3, 2)]
     assert successors2[2].gap_coords == [(0, 2), (1, 2), (3, 1), (3, 0)]
     assert successors5[2].gap_coords == [(2, 3), (2, 4)]
-    assert successors6[5].gap_coords == [(0, 1), (0, 3), (1, 1), (1, 2), (1, 3), (1, 4), (2, 0), (3, 3), (3, 2), (2, 2)]
+    assert successors6[4].gap_coords == [(0, 1), (0, 3), (1, 1), (1, 2), (1, 3), (1, 4), (2, 0), (3, 3), (3, 2), (2, 2)]
     
 
 def test_is_state_legal():
@@ -251,3 +251,4 @@ def test_step():
     # Win
     # Intermediate
     # Loss
+    pass
