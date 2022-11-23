@@ -75,6 +75,8 @@ ENV/
 
 # VS code settings
 .vscode
+.idea
+.gitattributes
 
 # wandb api key
 *.netrc
@@ -84,4 +86,4 @@ wandb/
 
 # caches
 .pytest_cache/
-__pycache__/
+*__pycache__/
