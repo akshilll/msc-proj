@@ -1,13 +1,30 @@
 # Graph Centrality for Option Discovery
-Experiments comparing graph centrality measures in subgoal detection for option discovery
+
+This repository contains experiments comparing graph centrality metrics used for in subgoal detection in hierarchical reinforcement learning. I have implemented functionality for:
+
+- [x] State transition graph generation for a given environment (assuming discrete state and action spaces).
+- [x] Subgoal detection using node centrality metric
+- [x] Visualising the state transition graph and detected subgoals.
+- [x] Option generation given a subgoal. 
+- [x] A pipeline for generating subgoals, creating options based on those subgoals, and training an agent equipped with those options.
+
+#### Centrality Measures Implemented
+
+- [x] Betweenness
+- [x] Load
+- [x] Degree
+- [x] Closeness
+- [x] Katz
+- [x] Eigenvector
+- [x] PageRank
+
 
 ## Setup
+We build on the code from BaRL_SimpleOptions. Running the experiments, therefore, requires installing BaRL_SimpleOptions which can be found [here](https://github.com/Ueva/BaRL-SimpleOptions). 
 
-Running the code in this repo requires the installation of BaRL_SimpleOptions which can be found [here](https://github.com/Ueva/BaRL-SimpleOptions) as well as **networkx**, **numpy** and **pickle**.
+ as well as **networkx**, **numpy** and **pickle**.
 
 
 ## Running
 
-To run the experiments navigate to **experiments/** and run **run_agent.py** which will generate options for each centrality from a previously computed graph and run 1000 episodes for 400 agents for each centrality and one for a primitive Q learning agent. The results will be pickled and stored in **experiments/results/**. **experiments/results/make_graph.py** can be used to generate figures displaying the results. 
-
-NOTE: for any environment where symmetry is present, after creating the symmetry-reduced graph which takes into account the symmetry of the state, subgoals must be made for both the subgoal states found on the symmetry-reduced graph and the full graph. We use Josh's code in which the agent cannot account for symmetry when faced with a state. To an agent, the symmetry of a state is not the same as the original state. Therefore, we must generate subgoals for both the original state and the symmetry state. In turn, we must also generate options using the full graph. If we do not, then some of the subgoals will not appear on the graph and so an error will occur. This is not ideal as it means we do not account for symmetry when learning.
+To run the experiments navigate to **experiments/** and run **run_agent.py**. This will generate options for each centrality metric and run training for an agents using each set of options generated. The results will be pickled and stored in **experiments/results/**. The code in **experiments/results/make_graph.py** can be used to generate figures displaying the results. 
