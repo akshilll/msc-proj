@@ -20,9 +20,7 @@ This repository contains experiments comparing graph centrality metrics used for
 
 
 ## Setup
-We build on the code from BaRL_SimpleOptions. Running the experiments, therefore, requires installing BaRL_SimpleOptions which can be found [here](https://github.com/Ueva/BaRL-SimpleOptions). 
-
- as well as **networkx**, **numpy** and **pickle**.
+We build on the code from BaRL_SimpleOptions. Running the experiments, therefore, requires installing BaRL_SimpleOptions which can be found [here](https://github.com/Ueva/BaRL-SimpleOptions), as well as **networkx**, **numpy** and **pickle**.
 
 
 ## Running
